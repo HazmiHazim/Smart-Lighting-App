@@ -3,7 +3,10 @@
   <component name="DesignSurface">
     <option name="filePathToZoomLevelMap">
       <map>
-        <entry key="..\:/UMP/Sem 7/PSM 2/Application/Smart-Lighting-App/app/src/main/res/layout/lamp_controller.xml" value="1.0" />
+        <entry key="..\:/UMP/Sem 7/PSM 2/Application/Smart-Lighting-App/app/src/main/res/drawable/seekbar_background.xml" value="0.1755" />
+        <entry key="..\:/UMP/Sem 7/PSM 2/Application/Smart-Lighting-App/app/src/main/res/drawable/switch_thumb.xml" value="0.176" />
+        <entry key="..\:/UMP/Sem 7/PSM 2/Application/Smart-Lighting-App/app/src/main/res/drawable/switch_track.xml" value="0.1755" />
+        <entry key="..\:/UMP/Sem 7/PSM 2/Application/Smart-Lighting-App/app/src/main/res/layout/lamp_controller.xml" value="0.2" />
       </map>
     </option>
   </component>
