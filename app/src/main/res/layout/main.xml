@@ -63,6 +63,7 @@
                         android:layout_height="wrap_content"
                         android:text="Lamp Controller"
                         android:textSize="14dp"
+                        android:textStyle="bold"
                         android:textColor="#6A0DAD"
                         app:fontFamily="@font/inter_extrabold" />
                 </LinearLayout>
@@ -95,6 +96,7 @@
                         android:layout_height="wrap_content"
                         android:text="Timer"
                         android:textSize="14dp"
+                        android:textStyle="bold"
                         android:textColor="#6A0DAD"
                         app:fontFamily="@font/inter_extrabold" />
                 </LinearLayout>
@@ -134,6 +136,7 @@
                         android:layout_height="wrap_content"
                         android:text="Colour Editor"
                         android:textSize="14dp"
+                        android:textStyle="bold"
                         android:textColor="#6A0DAD"
                         app:fontFamily="@font/inter_extrabold" />
                 </LinearLayout>
@@ -166,6 +169,7 @@
                         android:layout_height="wrap_content"
                         android:text="Data Analysis"
                         android:textSize="14dp"
+                        android:textStyle="bold"
                         android:textColor="#6A0DAD"
                         app:fontFamily="@font/inter_extrabold" />
                 </LinearLayout>
@@ -205,6 +209,7 @@
                         android:layout_height="wrap_content"
                         android:text="Lamp Controller"
                         android:textSize="14dp"
+                        android:textStyle="bold"
                         android:textColor="#6A0DAD"
                         app:fontFamily="@font/inter_extrabold" />
                 </LinearLayout>
@@ -237,6 +242,7 @@
                         android:layout_height="wrap_content"
                         android:text="Lamp Controller"
                         android:textSize="14dp"
+                        android:textStyle="bold"
                         android:textColor="#6A0DAD"
                         app:fontFamily="@font/inter_extrabold" />
                 </LinearLayout>
