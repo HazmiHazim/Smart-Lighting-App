@@ -14,4 +14,12 @@
         <item name="android:windowTranslucentNavigation">true</item>
         <!-- Customize your theme here. -->
     </style>
+
+    <!-- Custom Time Picker Dialog -->
+    <style name="CustomTimePickerDialog" parent="android:Theme.Holo.Light.Dialog">
+        <item name="android:textColor">@color/black</item>
+        <item name="android:colorControlActivated">@color/lavender</item>
+        <item name="android:fontFamily">@font/inter</item>
+        <item name="android:textStyle">bold</item>
+    </style>
 </resources>

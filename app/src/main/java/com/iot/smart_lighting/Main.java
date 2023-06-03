@@ -29,5 +29,13 @@ public class Main extends AppCompatActivity {
                 startActivity(intent);
             }
         });
+
+        feature2.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent intent = new Intent(Main.this, Timer.class);
+                startActivity(intent);
+            }
+        });
     }
 }
