@@ -16,7 +16,6 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 
-import java.text.DateFormat;
 import java.util.Calendar;
 
 public class Timer extends AppCompatActivity {
@@ -69,13 +68,14 @@ public class Timer extends AppCompatActivity {
                     @Override
                     public void onClick(DialogInterface dialogInterface, int i) {
                         // Save to sql database
+                        saveTimer();
                     }
                 });
 
                 timePickerSpinner.setButton(DialogInterface.BUTTON_NEGATIVE, "Cancel", new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialogTimer, int i) {
-                        dialogTimer.cancel();
+                        dialogTimer.dismiss();
                     }
                 });
 
@@ -85,5 +85,9 @@ public class Timer extends AppCompatActivity {
                 timePickerSpinner.show();
             }
         });
+    }
+
+    private static void saveTimer() {
+        // Save to SQL Database
     }
 }

@@ -23,6 +23,10 @@
             android:name=".Timer"
             android:exported="true" />
 
+        <activity
+            android:name=".ColourEditor"
+            android:exported="true" />
+
         <!-- .................................................. -->
 
         <!-- First Page -->

@@ -37,5 +37,13 @@ public class Main extends AppCompatActivity {
                 startActivity(intent);
             }
         });
+
+        feature3.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent intent = new Intent(Main.this, ColourEditor.class);
+                startActivity(intent);
+            }
+        });
     }
 }
