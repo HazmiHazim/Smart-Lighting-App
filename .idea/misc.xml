@@ -10,11 +10,14 @@
         <entry key="..\:/UMP/Sem 7/PSM 2/Application/Smart-Lighting-App/app/src/main/res/font/inter.xml" value="0.28020833333333334" />
         <entry key="..\:/UMP/Sem 7/PSM 2/Application/Smart-Lighting-App/app/src/main/res/layout/colour_editor.xml" value="0.25" />
         <entry key="..\:/UMP/Sem 7/PSM 2/Application/Smart-Lighting-App/app/src/main/res/layout/data_analysis.xml" value="0.25" />
-        <entry key="..\:/UMP/Sem 7/PSM 2/Application/Smart-Lighting-App/app/src/main/res/layout/data_analysis_list_item.xml" value="0.25" />
+        <entry key="..\:/UMP/Sem 7/PSM 2/Application/Smart-Lighting-App/app/src/main/res/layout/data_analysis_list_item.xml" value="0.264" />
         <entry key="..\:/UMP/Sem 7/PSM 2/Application/Smart-Lighting-App/app/src/main/res/layout/lamp_controller.xml" value="0.4" />
         <entry key="..\:/UMP/Sem 7/PSM 2/Application/Smart-Lighting-App/app/src/main/res/layout/main.xml" value="0.264" />
+        <entry key="..\:/UMP/Sem 7/PSM 2/Application/Smart-Lighting-App/app/src/main/res/layout/network_dialog_box.xml" value="0.264" />
         <entry key="..\:/UMP/Sem 7/PSM 2/Application/Smart-Lighting-App/app/src/main/res/layout/timer.xml" value="0.536" />
         <entry key="..\:/UMP/Sem 7/PSM 2/Application/Smart-Lighting-App/app/src/main/res/layout/timer1.xml" value="0.264" />
+        <entry key="..\:/UMP/Sem 7/PSM 2/Application/Smart-Lighting-App/app/src/main/res/menu/network_dialog_box.xml" value="0.25" />
+        <entry key="..\:/UMP/Sem 7/PSM 2/Application/Smart-Lighting-App/app/src/main/res/menu/setting.xml" value="0.25" />
       </map>
     </option>
   </component>
