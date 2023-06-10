@@ -27,6 +27,10 @@
             android:name=".ColourEditor"
             android:exported="true" />
 
+        <activity
+            android:name=".DataAnalysis"
+            android:exported="true" />
+
         <!-- .................................................. -->
 
         <!-- First Page -->
