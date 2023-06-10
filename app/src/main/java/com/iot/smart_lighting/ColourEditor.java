@@ -9,14 +9,14 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import com.larswerkman.holocolorpicker.ColorPicker;
 import com.larswerkman.holocolorpicker.OpacityBar;
-import com.larswerkman.holocolorpicker.SVBar;
+import com.larswerkman.holocolorpicker.SaturationBar;
 
 public class ColourEditor extends AppCompatActivity {
 
     // Variable Declaration
     ImageView back, setting;
     ColorPicker colourWheel;
-    SVBar saturation;
+    SaturationBar saturation;
     OpacityBar opacity;
 
     @Override
@@ -39,7 +39,7 @@ public class ColourEditor extends AppCompatActivity {
         });
 
         // Make bar function colour changing with colour wheel
-        colourWheel.addSVBar(saturation);
+        colourWheel.addSaturationBar(saturation);
         colourWheel.addOpacityBar(opacity);
     }
 }

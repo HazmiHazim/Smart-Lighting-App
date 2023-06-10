@@ -35,7 +35,6 @@
         app:srcCompat="@drawable/setting_button" />
 
     <TextView
-        android:id="@+id/textView3"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="COLOR PICKER"
@@ -76,7 +75,7 @@
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintVertical_bias="1.0" />
 
-    <com.larswerkman.holocolorpicker.SVBar
+    <com.larswerkman.holocolorpicker.SaturationBar
         android:id="@+id/saturationBar"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
