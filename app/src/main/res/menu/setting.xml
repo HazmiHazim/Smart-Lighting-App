@@ -14,10 +14,4 @@
         android:title="Light Theme"
         app:showAsAction="always" />
 
-    <item
-        android:id="@+id/changeSsid"
-        android:icon="@drawable/ic_baseline_rss_feed_24"
-        android:title="Network"
-        app:showAsAction="always" />
-
 </menu>

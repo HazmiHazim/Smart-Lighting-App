@@ -39,12 +39,8 @@ public class Main extends AppCompatActivity {
                         if(menuItem.getItemId() == R.id.darkMode) {
                             // Handle dark mode
                         }
-                        else if (menuItem.getItemId() == R.id.lightMode){
-                            // Handle light mode
-                        }
                         else {
-                            NetworkDialogBox dialogBox = new NetworkDialogBox();
-                            dialogBox.show(getSupportFragmentManager(), "Network Dialog Box");
+                            // Handle light mode
                         }
                         return true;
                     }

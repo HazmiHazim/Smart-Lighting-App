@@ -1,6 +1,5 @@
 package com.iot.smart_lighting.Adapter;
 
-import android.app.LauncherActivity;
 import android.content.Context;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -11,14 +10,12 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.iot.smart_lighting.Model.LampColourModel;
 import com.iot.smart_lighting.Model.LampModel;
-import com.iot.smart_lighting.Model.NetworkModel;
 import com.iot.smart_lighting.R;
 
 import java.util.List;
 
 public class DataAnalysisAdapter extends RecyclerView.Adapter<DataAnalysisAdapter.DataAnalysisHolder> {
 
-    private List<NetworkModel> networkData;
     private List<LampModel> lampData;
     private List<LampColourModel> lampColourData;
     private Context context;
@@ -31,7 +28,6 @@ public class DataAnalysisAdapter extends RecyclerView.Adapter<DataAnalysisAdapte
 
     @Override
     public void onBindViewHolder(DataAnalysisHolder holder, int position) {
-        NetworkModel network = networkData.get(position);
         LampModel lamp = lampData.get(position);
         LampColourModel lampColour = lampColourData.get(position);
 

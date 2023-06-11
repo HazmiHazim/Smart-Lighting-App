@@ -1,11 +1,15 @@
 package com.iot.smart_lighting;
 
 import android.app.TimePickerDialog;
+import android.content.ContentValues;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.database.Cursor;
+import android.database.sqlite.SQLiteDatabase;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
@@ -13,17 +17,31 @@ import android.widget.TimePicker;
 import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
+import com.iot.smart_lighting.Adapter.TimerAdapter;
+import com.iot.smart_lighting.Model.LampModel;
+import com.iot.smart_lighting.Model.LampTimerModel;
+import com.iot.smart_lighting.Model.SmartLampDB;
 
+import java.util.ArrayList;
 import java.util.Calendar;
 
 public class Timer extends AppCompatActivity {
 
     // Variable Declaration
-    ImageView back, setting;
+    ImageView back, setting, noTimerData;
     LinearLayout timerLamp1, timerLamp2, timerLamp3;
     FloatingActionButton addTimer;
+    RecyclerView recyclerView;
+    SmartLampDB db;
+    SQLiteDatabase sqlDB;
+    ArrayList<String> time;
+    TimerAdapter adapter;
+
+    private String timeChoose;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -32,10 +50,20 @@ public class Timer extends AppCompatActivity {
 
         back = findViewById(R.id.back_btn2);
         setting = findViewById(R.id.setting_btn3);
+        noTimerData = findViewById(R.id.noTimerFound);
         timerLamp1 = findViewById(R.id.lNav1);
         timerLamp2 = findViewById(R.id.lNav2);
         timerLamp3 = findViewById(R.id.lNav3);
         addTimer = findViewById(R.id.addTimerBtn);
+        recyclerView = findViewById(R.id.recyclerViewTimer);
+
+        db = new SmartLampDB(Timer.this);
+        time = new ArrayList<String>();
+
+        // Attach TimerAdapter to this class
+        adapter = new TimerAdapter(Timer.this, time);
+        recyclerView.setLayoutManager(new LinearLayoutManager(Timer.this));
+        recyclerView.setAdapter(adapter);
 
         back.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -44,6 +72,8 @@ public class Timer extends AppCompatActivity {
                 startActivity(intent);
             }
         });
+
+        showTimer();
 
         addTimer.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -58,7 +88,8 @@ public class Timer extends AppCompatActivity {
                         new TimePickerDialog.OnTimeSetListener() {
                             @Override
                             public void onTimeSet(TimePicker timePicker, int hours, int minutes) {
-                                String timeChoose = hours + " : " + minutes;
+                                timeChoose = hours + " : " + minutes;
+                                addTimer(timeChoose);
                                 Toast.makeText(Timer.this, "Set Time: " + timeChoose, Toast.LENGTH_SHORT).show();
                                 // Save to sql database
                             }
@@ -68,7 +99,7 @@ public class Timer extends AppCompatActivity {
                     @Override
                     public void onClick(DialogInterface dialogInterface, int i) {
                         // Save to sql database
-                        saveTimer();
+                        //addTimer(timeChoose);
                     }
                 });
 
@@ -87,7 +118,35 @@ public class Timer extends AppCompatActivity {
         });
     }
 
-    private static void saveTimer() {
+    // Method add to database
+    private void addTimer(String timeChoose) {
         // Save to SQL Database
+        sqlDB = db.getWritableDatabase();
+        ContentValues cv = new ContentValues();
+        cv.put("time", timeChoose);
+        cv.put("lamp_id", "1");
+        long result = sqlDB.insert("lampTimer", null, cv);
+        if (result == -1) {
+            Log.d("TAG: ", "Fail");
+        }
+        else {
+            Log.d("TAG: ", "Success");
+        }
+    }
+
+    private void showTimer() {
+        String query = "SELECT * FROM lampTimer WHERE lamp_id = 1";
+        sqlDB = db.getReadableDatabase();
+        Cursor cursor = sqlDB.rawQuery(query, null);
+        if (cursor.getCount() == 0) {
+            noTimerData.setVisibility(View.VISIBLE);
+        }
+        else {
+            noTimerData.setVisibility(View.GONE);
+            while (cursor.moveToNext()) {
+                time.add(cursor.getString(1));
+            }
+        }
+        cursor.close();
     }
 }

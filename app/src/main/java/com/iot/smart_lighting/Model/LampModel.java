@@ -3,19 +3,23 @@ package com.iot.smart_lighting.Model;
 public class LampModel {
 
     private int id;
+    private String ssidName;
     private int connection;
     private int status;
-    private int networkId;
 
-    public LampModel(int id, int connection, int status, int networkId) {
+    public LampModel(int id, String ssidName, int connection, int status) {
         this.id = id;
+        this.ssidName = ssidName;
         this.connection = connection;
         this.status = status;
-        this.networkId = networkId;
     }
 
     public int getId() {
         return id;
+    }
+
+    public String getSsidName() {
+        return ssidName;
     }
 
     public int getConnection() {
@@ -24,9 +28,5 @@ public class LampModel {
 
     public int getStatus() {
         return status;
-    }
-
-    public int getNetworkId() {
-        return networkId;
     }
 }
