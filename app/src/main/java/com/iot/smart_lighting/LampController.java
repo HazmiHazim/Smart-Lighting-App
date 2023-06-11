@@ -1,7 +1,10 @@
 package com.iot.smart_lighting;
 
+import android.content.ContentValues;
 import android.content.Intent;
+import android.database.sqlite.SQLiteDatabase;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.widget.CompoundButton;
 import android.widget.ImageView;
@@ -10,12 +13,19 @@ import android.widget.Switch;
 
 import androidx.appcompat.app.AppCompatActivity;
 
+import com.iot.smart_lighting.Model.SmartLampDB;
+
 public class LampController extends AppCompatActivity {
 
     // Variable Declaration
     Switch switch1, switch2, switch3;
     ImageView back, setting, bulb1, bulb2, bulb3, bulb1_on, bulb2_on, bulb3_on;
     SeekBar intensity1, intensity2, intensity3;
+    SmartLampDB myDB;
+    SQLiteDatabase sqlDB;
+    String networkName;
+    int lampStatus;
+    int intensity;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -43,6 +53,9 @@ public class LampController extends AppCompatActivity {
         bulb3_on = findViewById(R.id.lImage3_on);
         intensity3 = findViewById(R.id.seekbar3);
 
+        // Create instance for SmartLampDB
+        myDB = new SmartLampDB(LampController.this);
+
         back.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -62,10 +75,27 @@ public class LampController extends AppCompatActivity {
                     intensity1.setVisibility(View.VISIBLE);
                     // LED connection....
                     //
-                    //
+                    // User must connect with ESP32 to create the data otherwise it cannot be created
+                    // THIS IS JUST A DUMMY ------EDIT THIS PART ONWARDS---------
+                    networkName = "Saje Je Suka Suka";
+                    lampStatus = 1;
+                    intensity = 20;
+                    int id=1;
+                    //create(networkName, lampStatus, intensity);
+                    if (id != -1) {
+                        update(id, intensity, lampStatus);
+                    }
+                    else
+                        create(networkName, lampStatus, intensity);
+                    //update(id, intensity, lampStatus);
                 }
                 else
                 {
+                    // THIS IS JUST A DUMMY ------EDIT THIS PART ONWARDS---------
+                    int id=1;
+                    lampStatus = 0;
+                    intensity = 20;
+                    update(id, intensity, lampStatus);
                     // LED connection....
                     //
                     //
@@ -125,5 +155,37 @@ public class LampController extends AppCompatActivity {
                 }
             }
         });
+    }
+
+    // Create lamp data in SQLite
+    private void create(String networkName, int lampStatus, int intensity) {
+        sqlDB = myDB.getWritableDatabase();
+        myDB.onUpgrade(sqlDB, 1, 2);
+        ContentValues cv = new ContentValues();
+        cv.put("ssid_name", networkName);
+        cv.put("connection", "1");
+        cv.put("status", lampStatus);
+        cv.put("intensity", intensity);
+        long result = sqlDB.insert("lamp", null, cv);
+        if (result == -1) {
+            Log.d("CREATE: ", "Fail");
+        }
+        else {
+            Log.d("CREATE: ", "Success");
+        }
+    }
+
+    // Update lamp data
+    private void update(int id, int intensity, int lampStatus){
+        sqlDB = myDB.getWritableDatabase();
+        ContentValues cv = new ContentValues();
+        cv.put("status", lampStatus);
+        long result = sqlDB.update("lamp", cv, "id=?", new String[] {String.valueOf(id)} );
+        if (result == -1) {
+            Log.d("UPDATE: ", "Fail");
+        }
+        else {
+            Log.d("UPDATE: ", "Success");
+        }
     }
 }

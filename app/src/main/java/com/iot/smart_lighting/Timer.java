@@ -36,7 +36,7 @@ public class Timer extends AppCompatActivity {
     LinearLayout timerLamp1, timerLamp2, timerLamp3;
     FloatingActionButton addTimer;
     RecyclerView recyclerView;
-    SmartLampDB db;
+    SmartLampDB myDB;
     SQLiteDatabase sqlDB;
     ArrayList<String> time;
     TimerAdapter adapter;
@@ -57,7 +57,8 @@ public class Timer extends AppCompatActivity {
         addTimer = findViewById(R.id.addTimerBtn);
         recyclerView = findViewById(R.id.recyclerViewTimer);
 
-        db = new SmartLampDB(Timer.this);
+        // Create instance for SmartLampDB
+        myDB = new SmartLampDB(Timer.this);
         time = new ArrayList<String>();
 
         // Attach TimerAdapter to this class
@@ -73,7 +74,7 @@ public class Timer extends AppCompatActivity {
             }
         });
 
-        showTimer();
+        read();
 
         addTimer.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -89,7 +90,7 @@ public class Timer extends AppCompatActivity {
                             @Override
                             public void onTimeSet(TimePicker timePicker, int hours, int minutes) {
                                 timeChoose = hours + " : " + minutes;
-                                addTimer(timeChoose);
+                                create(timeChoose);
                                 Toast.makeText(Timer.this, "Set Time: " + timeChoose, Toast.LENGTH_SHORT).show();
                                 // Save to sql database
                             }
@@ -119,9 +120,9 @@ public class Timer extends AppCompatActivity {
     }
 
     // Method add to database
-    private void addTimer(String timeChoose) {
+    private void create(String timeChoose) {
         // Save to SQL Database
-        sqlDB = db.getWritableDatabase();
+        sqlDB = myDB.getWritableDatabase();
         ContentValues cv = new ContentValues();
         cv.put("time", timeChoose);
         cv.put("lamp_id", "1");
@@ -134,9 +135,9 @@ public class Timer extends AppCompatActivity {
         }
     }
 
-    private void showTimer() {
+    private void read() {
         String query = "SELECT * FROM lampTimer WHERE lamp_id = 1";
-        sqlDB = db.getReadableDatabase();
+        sqlDB = myDB.getReadableDatabase();
         Cursor cursor = sqlDB.rawQuery(query, null);
         if (cursor.getCount() == 0) {
             noTimerData.setVisibility(View.VISIBLE);

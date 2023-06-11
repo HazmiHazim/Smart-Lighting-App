@@ -16,11 +16,11 @@ public class SmartLampDB extends SQLiteOpenHelper {
     public void onCreate(SQLiteDatabase db) {
         // Create table lamp
         db.execSQL("CREATE TABLE IF NOT EXISTS lamp (id INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, " +
-                "connection INTEGER NOT NULL, status INTEGER NOT NULL);");
+                "ssid_name VARCHAR(50) NOT NULL, intensity INTEGER NOT NULL, connection INTEGER NOT NULL, status INTEGER NOT NULL);");
 
         // Create table timer
         db.execSQL("CREATE TABLE IF NOT EXISTS lampTimer (id INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, " +
-                "time VARCHAR(10), status INTEGER, lamp_id INTEGER NOT NULL, FOREIGN KEY(lamp_id) REFERENCES lamp(id));");
+                "time VARCHAR(10) NOT NULL, status INTEGER NOT NULL, lamp_id INTEGER NOT NULL, FOREIGN KEY(lamp_id) REFERENCES lamp(id));");
 
         // Create table colour
         db.execSQL("CREATE TABLE IF NOT EXISTS lampColour (id INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, " +
