@@ -160,7 +160,6 @@ public class LampController extends AppCompatActivity {
     // Create lamp data in SQLite
     private void create(String networkName, int lampStatus, int intensity) {
         sqlDB = myDB.getWritableDatabase();
-        myDB.onUpgrade(sqlDB, 1, 2);
         ContentValues cv = new ContentValues();
         cv.put("ssid_name", networkName);
         cv.put("connection", "1");

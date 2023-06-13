@@ -26,6 +26,7 @@ public class SmartLampDB extends SQLiteOpenHelper {
         db.execSQL("CREATE TABLE IF NOT EXISTS lampColour (id INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, " +
                 "colour VARCHAR(20) NOT NULL, saturation INTEGER, opacity INTEGER," +
                 "lamp_id INTEGER NOT NULL, FOREIGN KEY (lamp_id) REFERENCES lamp(id));");
+
     }
 
     @Override

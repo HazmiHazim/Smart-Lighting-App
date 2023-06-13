@@ -1,14 +1,19 @@
 package com.iot.smart_lighting;
 
 import android.content.Intent;
+import android.database.sqlite.SQLiteDatabase;
 import android.os.Bundle;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.PopupMenu;
 
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.cardview.widget.CardView;
+
+import com.iot.smart_lighting.Model.SmartLampDB;
+
 
 public class Main extends AppCompatActivity {
 

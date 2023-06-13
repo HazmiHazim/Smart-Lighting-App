@@ -39,11 +39,10 @@ public class DataAnalysisAdapter extends RecyclerView.Adapter<DataAnalysisAdapte
 
     @Override
     public void onBindViewHolder(DataAnalysisHolder holder, int position) {
-        holder.lampNo.setText(String.valueOf(id.get(position)));
+        holder.lampNo.setText("LAMP " + String.valueOf(id.get(position)));
         holder.ssidName.setText(String.valueOf(ssid_name.get(position)));
         holder.statusName.setText(String.valueOf(status.get(position)));
-        holder.intensity.setText(String.valueOf(intensity.get(position)));
-        holder.colourName.setText(String.valueOf(colour.get(position)));
+        holder.intensity.setText(String.valueOf(intensity.get(position)) + "%");
     }
 
     @Override

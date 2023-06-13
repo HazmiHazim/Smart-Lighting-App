@@ -27,8 +27,8 @@ public class DataAnalysis extends AppCompatActivity {
     DataAnalysisAdapter adapter;
 
     SmartLampDB myDB;
-    ArrayList <Integer> id, ssid_name, status, intensity;
-    ArrayList <String> colour;
+    ArrayList <Integer> id, status, intensity;
+    ArrayList <String> ssid_name, colour;
     SQLiteDatabase sqlDB;
 
     @Override
@@ -45,7 +45,7 @@ public class DataAnalysis extends AppCompatActivity {
         myDB = new SmartLampDB(DataAnalysis.this);
 
         id = new ArrayList<Integer>();
-        ssid_name = new ArrayList<Integer>();
+        ssid_name = new ArrayList<String>();
         status = new ArrayList<Integer>();
         intensity = new ArrayList<Integer>();
         colour = new ArrayList<String>();
@@ -70,27 +70,28 @@ public class DataAnalysis extends AppCompatActivity {
     // Fetch data from SmartLamp db
     private void read() {
         String query1 = "SELECT * FROM lamp";
-        String query2 = "SELECT colour FROM lampColour";
+        //String query2 = "SELECT colour FROM lampColour";
         sqlDB = myDB.getReadableDatabase();
         Cursor cursor1 = sqlDB.rawQuery(query1, null);
-        Cursor cursor2 = sqlDB.rawQuery(query2, null);
-        if (cursor1.getCount() == 0 && cursor2.getCount() == 0) {
+        //Cursor cursor2 = sqlDB.rawQuery(query2, null);
+        if (cursor1.getCount() == 0) {
             emptyDataIcon.setVisibility(View.VISIBLE);
         }
         else {
             emptyDataIcon.setVisibility(View.GONE);
             while (cursor1.moveToNext()) {
                 id.add(cursor1.getInt(0));
-                ssid_name.add(cursor1.getInt(1));
+                ssid_name.add(cursor1.getString(1));
                 intensity.add(cursor1.getInt(2));
                 status.add(cursor1.getInt(4));
             }
+            /*
             while (cursor2.moveToNext()) {
                 colour.add(cursor2.getString(0));
-            }
+            }*/
             Log.d("FETCH: ", "Successful");
         }
         cursor1.close();
-        cursor2.close();
+        //cursor2.close();
     }
 }

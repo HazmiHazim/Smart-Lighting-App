@@ -117,6 +117,8 @@ public class Timer extends AppCompatActivity {
                 timePickerSpinner.show();
             }
         });
+
+        adapter.notifyDataSetChanged();
     }
 
     // Method add to database
