@@ -1,6 +1,9 @@
 package com.iot.smart_lighting.Adapter;
 
 import android.content.Context;
+import android.database.Cursor;
+import android.database.sqlite.SQLiteDatabase;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -8,17 +11,25 @@ import android.widget.TextView;
 
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.iot.smart_lighting.Model.LampColourModel;
-import com.iot.smart_lighting.Model.LampModel;
+import com.iot.smart_lighting.Model.SmartLampDB;
 import com.iot.smart_lighting.R;
 
-import java.util.List;
+import java.util.ArrayList;
+import java.util.Arrays;
 
 public class DataAnalysisAdapter extends RecyclerView.Adapter<DataAnalysisAdapter.DataAnalysisHolder> {
 
-    private List<LampModel> lampData;
-    private List<LampColourModel> lampColourData;
     private Context context;
+    private ArrayList id, ssid_name, status, intensity, colour;
+
+    public DataAnalysisAdapter(Context context, ArrayList id, ArrayList ssid_name, ArrayList status, ArrayList intensity, ArrayList colour) {
+        this.context = context;
+        this.id = id;
+        this.ssid_name = ssid_name;
+        this.status = status;
+        this.intensity = intensity;
+        this.colour = colour;
+    }
 
     @Override
     public DataAnalysisHolder onCreateViewHolder(ViewGroup parent, int viewType) {
@@ -28,20 +39,21 @@ public class DataAnalysisAdapter extends RecyclerView.Adapter<DataAnalysisAdapte
 
     @Override
     public void onBindViewHolder(DataAnalysisHolder holder, int position) {
-        LampModel lamp = lampData.get(position);
-        LampColourModel lampColour = lampColourData.get(position);
-
-        // Fetch data and Set it
+        holder.lampNo.setText(String.valueOf(id.get(position)));
+        holder.ssidName.setText(String.valueOf(ssid_name.get(position)));
+        holder.statusName.setText(String.valueOf(status.get(position)));
+        holder.intensity.setText(String.valueOf(intensity.get(position)));
+        holder.colourName.setText(String.valueOf(colour.get(position)));
     }
 
     @Override
     public int getItemCount() {
-        return 0;
+        return id.size();
     }
 
     public class DataAnalysisHolder extends RecyclerView.ViewHolder {
 
-        TextView lampNo, ssidTitle, ssidName, statusTitle, status, intensityTitle, intensity, colourTitle, colour;
+        TextView lampNo, ssidTitle, ssidName, statusTitle, statusName, intensityTitle, intensity, colourTitle, colourName;
 
         public DataAnalysisHolder(View itemView) {
             super(itemView);
@@ -50,11 +62,11 @@ public class DataAnalysisAdapter extends RecyclerView.Adapter<DataAnalysisAdapte
             ssidTitle = itemView.findViewById(R.id.ssidNameTitle);
             ssidName = itemView.findViewById(R.id.ssidAnswer);
             statusTitle = itemView.findViewById(R.id.statusTitle);
-            status = itemView.findViewById(R.id.statusAnswer);
+            statusName = itemView.findViewById(R.id.statusAnswer);
             intensityTitle = itemView.findViewById(R.id.intensityTitle);
             intensity = itemView.findViewById(R.id.intensityAnswer);
             colourTitle = itemView.findViewById(R.id.colourTitle);
-            colour = itemView.findViewById(R.id.colourAnswer);
+            colourName = itemView.findViewById(R.id.colourAnswer);
 
             //Set all title to default text
             ssidTitle.setText("SSID Name:");

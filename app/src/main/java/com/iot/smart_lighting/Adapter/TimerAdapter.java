@@ -32,7 +32,7 @@ public class TimerAdapter extends RecyclerView.Adapter<TimerAdapter.TimerHolder>
 
     @Override
     public void onBindViewHolder(TimerHolder holder, int position) {
-        holder.time.setText(String.valueOf(time.get(position)));
+        holder.timeName.setText(String.valueOf(time.get(position)));
 
     }
 
@@ -43,13 +43,13 @@ public class TimerAdapter extends RecyclerView.Adapter<TimerAdapter.TimerHolder>
 
     public class TimerHolder extends RecyclerView.ViewHolder {
 
-        TextView time;
+        TextView timeName;
         Switch switchTimer;
 
         public TimerHolder(View itemView) {
             super(itemView);
 
-            time = itemView.findViewById(R.id.lampName);
+            timeName = itemView.findViewById(R.id.lampName);
             switchTimer = itemView.findViewById(R.id.timerSwitchBtn);
 
             switchTimer.setOnClickListener(new View.OnClickListener() {
