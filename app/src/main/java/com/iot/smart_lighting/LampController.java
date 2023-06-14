@@ -2,6 +2,7 @@ package com.iot.smart_lighting;
 
 import android.content.ContentValues;
 import android.content.Intent;
+import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.os.Bundle;
 import android.util.Log;
@@ -77,25 +78,24 @@ public class LampController extends AppCompatActivity {
                     //
                     // User must connect with ESP32 to create the data otherwise it cannot be created
                     // THIS IS JUST A DUMMY ------EDIT THIS PART ONWARDS---------
-                    networkName = "Saje Je Suka Suka";
+                    networkName = "ESP32 Network";
                     lampStatus = 1;
                     intensity = 20;
-                    int id=1;
-                    //create(networkName, lampStatus, intensity);
-                    if (id != -1) {
-                        update(id, intensity, lampStatus);
+                    sqlDB = myDB.getReadableDatabase();
+                    Cursor cursor = sqlDB.rawQuery("SELECT id FROM lamp WHERE id = 1", null);
+                    if (cursor.moveToFirst()) {
+                        update(1, intensity, lampStatus);
                     }
-                    else
+                    else {
                         create(networkName, lampStatus, intensity);
-                    //update(id, intensity, lampStatus);
+                    }
                 }
                 else
                 {
                     // THIS IS JUST A DUMMY ------EDIT THIS PART ONWARDS---------
-                    int id=1;
                     lampStatus = 0;
                     intensity = 20;
-                    update(id, intensity, lampStatus);
+                    update(1, intensity, lampStatus);
                     // LED connection....
                     //
                     //
@@ -160,18 +160,20 @@ public class LampController extends AppCompatActivity {
     // Create lamp data in SQLite
     private void create(String networkName, int lampStatus, int intensity) {
         sqlDB = myDB.getWritableDatabase();
+        myDB.onUpgrade(sqlDB, 2, 1);
         ContentValues cv = new ContentValues();
         cv.put("ssid_name", networkName);
         cv.put("connection", "1");
         cv.put("status", lampStatus);
         cv.put("intensity", intensity);
-        long result = sqlDB.insert("lamp", null, cv);
-        if (result == -1) {
+        long id = sqlDB.insert("lamp", null, cv);
+        if (id == -1) {
             Log.d("CREATE: ", "Fail");
         }
         else {
             Log.d("CREATE: ", "Success");
         }
+        //sqlDB.close();
     }
 
     // Update lamp data
@@ -186,5 +188,14 @@ public class LampController extends AppCompatActivity {
         else {
             Log.d("UPDATE: ", "Success");
         }
+        //sqlDB.close();
+    }
+
+    // Delete table lamp
+    private void delete() {
+        sqlDB = myDB.getWritableDatabase();
+        sqlDB.delete("lamp", "id=?", new String[] {String.valueOf(1)});
+        sqlDB.close();
+        Log.d("DELETE: ", "Successful");
     }
 }

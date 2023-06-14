@@ -1,6 +1,8 @@
 package com.iot.smart_lighting.Adapter;
 
+import android.content.ContentValues;
 import android.content.Context;
+import android.database.sqlite.SQLiteDatabase;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -10,6 +12,7 @@ import android.widget.Toast;
 
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.iot.smart_lighting.Model.SmartLampDB;
 import com.iot.smart_lighting.R;
 
 import java.util.ArrayList;
@@ -52,13 +55,12 @@ public class TimerAdapter extends RecyclerView.Adapter<TimerAdapter.TimerHolder>
             timeName = itemView.findViewById(R.id.lampName);
             switchTimer = itemView.findViewById(R.id.timerSwitchBtn);
 
-            switchTimer.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View view) {
-                    // Handle event when on switch
-                    Toast.makeText(context, "Timer is on !!!", Toast.LENGTH_SHORT).show();
-                }
-            });
+            if (switchTimer.isChecked()) {
+                Toast.makeText(context, "Your timer is turn on!!", Toast.LENGTH_SHORT).show();
+            }
+            else {
+                Toast.makeText(context, "Your timer is turn off!!", Toast.LENGTH_SHORT).show();
+            }
         }
     }
 }

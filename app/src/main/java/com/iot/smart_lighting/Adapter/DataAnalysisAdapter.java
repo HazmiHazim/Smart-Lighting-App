@@ -43,6 +43,7 @@ public class DataAnalysisAdapter extends RecyclerView.Adapter<DataAnalysisAdapte
         holder.ssidName.setText(String.valueOf(ssid_name.get(position)));
         holder.statusName.setText(String.valueOf(status.get(position)));
         holder.intensity.setText(String.valueOf(intensity.get(position)) + "%");
+        holder.colourName.setText("#" + String.valueOf(colour.get(position)));
     }
 
     @Override

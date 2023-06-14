@@ -13,7 +13,6 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.iot.smart_lighting.Adapter.DataAnalysisAdapter;
-import com.iot.smart_lighting.Adapter.TimerAdapter;
 import com.iot.smart_lighting.Model.SmartLampDB;
 
 import java.util.ArrayList;
@@ -69,29 +68,23 @@ public class DataAnalysis extends AppCompatActivity {
 
     // Fetch data from SmartLamp db
     private void read() {
-        String query1 = "SELECT * FROM lamp";
-        //String query2 = "SELECT colour FROM lampColour";
+        String query = "SELECT * FROM lamp INNER JOIN lampColour ON lamp.id = lampColour.lamp_id ";
         sqlDB = myDB.getReadableDatabase();
-        Cursor cursor1 = sqlDB.rawQuery(query1, null);
-        //Cursor cursor2 = sqlDB.rawQuery(query2, null);
-        if (cursor1.getCount() == 0) {
+        Cursor cursor = sqlDB.rawQuery(query, null);
+        if (cursor.getCount() == 0) {
             emptyDataIcon.setVisibility(View.VISIBLE);
         }
         else {
             emptyDataIcon.setVisibility(View.GONE);
-            while (cursor1.moveToNext()) {
-                id.add(cursor1.getInt(0));
-                ssid_name.add(cursor1.getString(1));
-                intensity.add(cursor1.getInt(2));
-                status.add(cursor1.getInt(4));
+            while (cursor.moveToNext()) {
+                id.add(cursor.getInt(0));
+                ssid_name.add(cursor.getString(1));
+                intensity.add(cursor.getInt(2));
+                status.add(cursor.getInt(4));
+                colour.add(cursor.getString(1));
             }
-            /*
-            while (cursor2.moveToNext()) {
-                colour.add(cursor2.getString(0));
-            }*/
             Log.d("FETCH: ", "Successful");
         }
-        cursor1.close();
-        //cursor2.close();
+        cursor.close();
     }
 }

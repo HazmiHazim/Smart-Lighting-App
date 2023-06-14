@@ -127,13 +127,14 @@ public class Timer extends AppCompatActivity {
         sqlDB = myDB.getWritableDatabase();
         ContentValues cv = new ContentValues();
         cv.put("time", timeChoose);
+        cv.put("status", "0");
         cv.put("lamp_id", "1");
         long result = sqlDB.insert("lampTimer", null, cv);
         if (result == -1) {
-            Log.d("TAG: ", "Fail");
+            Log.d("CREATE: ", "Fail");
         }
         else {
-            Log.d("TAG: ", "Success");
+            Log.d("CREATE: ", "Success");
         }
     }
 
