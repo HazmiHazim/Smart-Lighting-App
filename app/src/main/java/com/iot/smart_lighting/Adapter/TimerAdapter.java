@@ -36,7 +36,6 @@ public class TimerAdapter extends RecyclerView.Adapter<TimerAdapter.TimerHolder>
     @Override
     public void onBindViewHolder(TimerHolder holder, int position) {
         holder.timeName.setText(String.valueOf(time.get(position)));
-
     }
 
     @Override

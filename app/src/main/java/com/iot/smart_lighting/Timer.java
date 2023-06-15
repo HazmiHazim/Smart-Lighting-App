@@ -22,8 +22,6 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.iot.smart_lighting.Adapter.TimerAdapter;
-import com.iot.smart_lighting.Model.LampModel;
-import com.iot.smart_lighting.Model.LampTimerModel;
 import com.iot.smart_lighting.Model.SmartLampDB;
 
 import java.util.ArrayList;
@@ -38,10 +36,12 @@ public class Timer extends AppCompatActivity {
     RecyclerView recyclerView;
     SmartLampDB myDB;
     SQLiteDatabase sqlDB;
-    ArrayList<String> time;
     TimerAdapter adapter;
 
     private String timeChoose;
+
+    // Initialize Arraylist Globally
+    ArrayList<String> time = new ArrayList<String>();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -59,7 +59,6 @@ public class Timer extends AppCompatActivity {
 
         // Create instance for SmartLampDB
         myDB = new SmartLampDB(Timer.this);
-        time = new ArrayList<String>();
 
         // Attach TimerAdapter to this class
         adapter = new TimerAdapter(Timer.this, time);
@@ -117,8 +116,6 @@ public class Timer extends AppCompatActivity {
                 timePickerSpinner.show();
             }
         });
-
-        adapter.notifyDataSetChanged();
     }
 
     // Method add to database
@@ -135,6 +132,8 @@ public class Timer extends AppCompatActivity {
         }
         else {
             Log.d("CREATE: ", "Success");
+            time.add(timeChoose);                  // Notify the data in Arraylist
+            adapter.notifyDataSetChanged();        // Notify the adapter of the data change
         }
     }
 
