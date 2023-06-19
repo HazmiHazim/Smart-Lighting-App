@@ -88,8 +88,11 @@ public class Timer extends AppCompatActivity {
                         new TimePickerDialog.OnTimeSetListener() {
                             @Override
                             public void onTimeSet(TimePicker timePicker, int hours, int minutes) {
-                                timeChoose = hours + " : " + minutes;
+                                timeChoose = checkDigit(hours) + " : " + checkDigit(minutes);
                                 create(timeChoose);
+                                noTimerData.setVisibility(View.GONE);
+                                time.add(timeChoose);
+                                adapter.notifyDataSetChanged();
                                 Toast.makeText(Timer.this, "Set Time: " + timeChoose, Toast.LENGTH_SHORT).show();
                                 // Save to sql database
                             }
@@ -118,6 +121,11 @@ public class Timer extends AppCompatActivity {
         });
     }
 
+    // Store value 0 for timepicker
+    public String checkDigit(int timeDigit) {
+        return timeDigit <= 9 ? "0" + timeDigit : String.valueOf(timeDigit);
+    }
+
     // Method add to database
     private void create(String timeChoose) {
         // Save to SQL Database
@@ -132,8 +140,6 @@ public class Timer extends AppCompatActivity {
         }
         else {
             Log.d("CREATE: ", "Success");
-            time.add(timeChoose);                  // Notify the data in Arraylist
-            adapter.notifyDataSetChanged();        // Notify the adapter of the data change
         }
     }
 

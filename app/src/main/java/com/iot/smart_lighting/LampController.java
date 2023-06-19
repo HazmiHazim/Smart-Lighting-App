@@ -137,6 +137,10 @@ public class LampController extends AppCompatActivity {
             public void onCheckedChanged(CompoundButton switchButton3, boolean c) {
                 if(switchButton3.isChecked())
                 {
+                    sqlDB = myDB.getWritableDatabase();
+                    sqlDB.delete("lamp", null, null);
+                    sqlDB.delete("lampTimer", null, null);
+                    sqlDB.delete("lampColour", null, null);
                     bulb3.setVisibility(View.GONE);
                     bulb3_on.setVisibility(View.VISIBLE);
                     intensity3.setVisibility(View.VISIBLE);
