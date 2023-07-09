@@ -31,14 +31,20 @@ public class Timer extends AppCompatActivity {
 
     // Variable Declaration
     ImageView back, setting, noTimerData;
-    LinearLayout timerLamp1, timerLamp2, timerLamp3;
+    LinearLayout lampNavTimer, timerLamp1, timerLamp2, timerLamp3;
+    LinearLayout timerLampArr[];
     FloatingActionButton addTimer;
     RecyclerView recyclerView;
     SmartLampDB myDB;
     SQLiteDatabase sqlDB;
     TimerAdapter adapter;
+    View selector1, selector2, selector3;
+    View selectorArr[];
 
     private String timeChoose;
+
+    // Variable to store the current selected index
+    int selectedIndex = 0;
 
     // Initialize Arraylist Globally
     ArrayList<String> time = new ArrayList<String>();
@@ -51,11 +57,15 @@ public class Timer extends AppCompatActivity {
         back = findViewById(R.id.back_btn2);
         setting = findViewById(R.id.setting_btn3);
         noTimerData = findViewById(R.id.noTimerFound);
+        lampNavTimer = findViewById(R.id.lampNavigationTimer);
         timerLamp1 = findViewById(R.id.lNav1);
         timerLamp2 = findViewById(R.id.lNav2);
         timerLamp3 = findViewById(R.id.lNav3);
         addTimer = findViewById(R.id.addTimerBtn);
         recyclerView = findViewById(R.id.recyclerViewTimer);
+        selector1 = findViewById(R.id.lNavSelector1);
+        selector2 = findViewById(R.id.lNavSelector2);
+        selector3 = findViewById(R.id.lNavSelector3);
 
         // Create instance for SmartLampDB
         myDB = new SmartLampDB(Timer.this);
@@ -64,6 +74,22 @@ public class Timer extends AppCompatActivity {
         adapter = new TimerAdapter(Timer.this, time);
         recyclerView.setLayoutManager(new LinearLayoutManager(Timer.this));
         recyclerView.setAdapter(adapter);
+
+        // Add all timerLamp LinearLayouts to the array
+        timerLampArr = new LinearLayout[] {timerLamp1, timerLamp2, timerLamp3};
+
+        // Add all selectors to the array
+        selectorArr = new View[] {selector1, selector2, selector3};
+
+        for (int i = 0; i < timerLampArr.length; i++) {
+            final int index = i;
+            timerLampArr[i].setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    selectNavigationPage(index);
+                }
+            });
+        }
 
         back.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -157,5 +183,17 @@ public class Timer extends AppCompatActivity {
             }
         }
         cursor.close();
+    }
+
+    // Create a method to handle the navigation page
+    private void selectNavigationPage(int index) {
+        if (index != selectedIndex) {
+            selectorArr[selectedIndex].setVisibility(View.GONE); // Hide the current selector
+            selectorArr[index].setVisibility(View.VISIBLE); // Show the selector for the selected page
+            selectedIndex = index; // Update the selected index
+
+            // Perform any other actions or updates based on the selected index
+            // For example, you can update the content displayed on the screen
+        }
     }
 }

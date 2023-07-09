@@ -2,7 +2,6 @@
 <androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
-    android:id="@+id/linearLayout"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@color/lavender"
@@ -34,13 +33,12 @@
         app:layout_constraintVertical_bias="0.039"
         app:srcCompat="@drawable/setting_button" />
 
-    <androidx.appcompat.widget.Toolbar
+    <LinearLayout
         android:id="@+id/lampNavigationTimer"
         android:layout_width="220dp"
         android:layout_height="wrap_content"
         android:background="#00FFFFFF"
-        android:minHeight="?attr/actionBarSize"
-        android:theme="?attr/actionBarTheme"
+        android:gravity="center"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.497"
@@ -115,7 +113,7 @@
 
         </LinearLayout>
 
-    </androidx.appcompat.widget.Toolbar>
+    </LinearLayout>
 
     <ImageView
         android:id="@+id/noTimerFound"
@@ -149,7 +147,7 @@
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/recyclerViewTimer"
         android:layout_width="wrap_content"
-        android:layout_height="530dp"
+        android:layout_height="620dp"
         app:layout_constraintBottom_toTopOf="@+id/addTimerBtn"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.498"
