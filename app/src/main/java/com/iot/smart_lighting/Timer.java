@@ -185,7 +185,7 @@ public class Timer extends AppCompatActivity {
         cursor.close();
     }
 
-    // Create a method to handle the navigation page
+    // Method to handle the navigation page for which lamp to use to set the time
     private void selectNavigationPage(int index) {
         if (index != selectedIndex) {
             selectorArr[selectedIndex].setVisibility(View.GONE); // Hide the current selector

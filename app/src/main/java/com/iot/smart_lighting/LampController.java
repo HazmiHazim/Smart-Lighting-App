@@ -11,10 +11,18 @@ import android.widget.CompoundButton;
 import android.widget.ImageView;
 import android.widget.SeekBar;
 import android.widget.Switch;
+import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
 
+import com.android.volley.Request;
+import com.android.volley.RequestQueue;
+import com.android.volley.Response;
+import com.android.volley.VolleyError;
+import com.android.volley.toolbox.StringRequest;
+import com.android.volley.toolbox.Volley;
 import com.iot.smart_lighting.Model.SmartLampDB;
+
 
 public class LampController extends AppCompatActivity {
 
@@ -57,6 +65,13 @@ public class LampController extends AppCompatActivity {
         // Create instance for SmartLampDB
         myDB = new SmartLampDB(LampController.this);
 
+        // Call function to ping to the ESP32
+        pingESP32();
+
+        // Call function to get state of lamp
+        getLampStates();
+
+
         back.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -74,6 +89,7 @@ public class LampController extends AppCompatActivity {
                     bulb1.setVisibility(View.GONE);
                     bulb1_on.setVisibility(View.VISIBLE);
                     intensity1.setVisibility(View.VISIBLE);
+                    Toast.makeText(LampController.this, "Lamp 1 is on", Toast.LENGTH_SHORT).show();
                     // LED connection....
                     //
                     // User must connect with ESP32 to create the data otherwise it cannot be created
@@ -102,6 +118,7 @@ public class LampController extends AppCompatActivity {
                     bulb1.setVisibility(View.VISIBLE);
                     bulb1_on.setVisibility(View.GONE);
                     intensity1.setVisibility(View.GONE);
+                    Toast.makeText(LampController.this, "Lamp 1 is off", Toast.LENGTH_SHORT).show();
                 }
             }
         });
@@ -115,6 +132,7 @@ public class LampController extends AppCompatActivity {
                     bulb2.setVisibility(View.GONE);
                     bulb2_on.setVisibility(View.VISIBLE);
                     intensity2.setVisibility(View.VISIBLE);
+                    Toast.makeText(LampController.this, "Lamp 2 is on", Toast.LENGTH_SHORT).show();
                     // LED connection....
                     //
                     //
@@ -127,6 +145,7 @@ public class LampController extends AppCompatActivity {
                     bulb2.setVisibility(View.VISIBLE);
                     bulb2_on.setVisibility(View.GONE);
                     intensity2.setVisibility(View.GONE);
+                    Toast.makeText(LampController.this, "Lamp 2 is off", Toast.LENGTH_SHORT).show();
                 }
             }
         });
@@ -144,6 +163,7 @@ public class LampController extends AppCompatActivity {
                     bulb3.setVisibility(View.GONE);
                     bulb3_on.setVisibility(View.VISIBLE);
                     intensity3.setVisibility(View.VISIBLE);
+                    Toast.makeText(LampController.this, "Lamp 3 is on", Toast.LENGTH_SHORT).show();
                     // LED connection....
                     //
                     //
@@ -156,9 +176,56 @@ public class LampController extends AppCompatActivity {
                     bulb3.setVisibility(View.VISIBLE);
                     bulb3_on.setVisibility(View.GONE);
                     intensity3.setVisibility(View.GONE);
+                    Toast.makeText(LampController.this, "Lamp 3 is off", Toast.LENGTH_SHORT).show();
                 }
             }
         });
+    }
+
+    // Function to ping to ESP32
+    public void pingESP32() {
+        // Instantiate the RequestQueue
+        RequestQueue queue = Volley.newRequestQueue(LampController.this);
+        String url = "http://192.168.0.1/ping";
+
+        // Request a string response  from the URL
+        StringRequest stringRequest = new StringRequest(Request.Method.GET, url, new Response.Listener<String>() {
+            @Override
+            public void onResponse(String response) {
+                Toast.makeText(LampController.this, "Response: ", Toast.LENGTH_SHORT).show();
+            }
+        }, new Response.ErrorListener() {
+            @Override
+            public void onErrorResponse(VolleyError error) {
+                Toast.makeText(LampController.this, error.toString(), Toast.LENGTH_SHORT).show();
+            }
+        });
+
+        // Add the request to the RequestQueue
+        queue.add(stringRequest);
+    }
+
+    // Function to get state of the lamp
+    public void getLampStates() {
+        // Instantiate the RequestQueue
+        RequestQueue queue = Volley.newRequestQueue(LampController.this);
+        String url = "http://192.168.0.1/state";
+
+        // Request a string response  from the URL
+        StringRequest stringRequest = new StringRequest(Request.Method.GET, url, new Response.Listener<String>() {
+            @Override
+            public void onResponse(String response) {
+                Toast.makeText(LampController.this, "Response: ", Toast.LENGTH_SHORT).show();
+            }
+        }, new Response.ErrorListener() {
+            @Override
+            public void onErrorResponse(VolleyError error) {
+                Toast.makeText(LampController.this, error.toString(), Toast.LENGTH_SHORT).show();
+            }
+        });
+
+        // Add the request to the RequestQueue
+        queue.add(stringRequest);
     }
 
     // Create lamp data in SQLite
