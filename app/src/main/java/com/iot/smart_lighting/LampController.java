@@ -71,7 +71,7 @@ public class LampController extends AppCompatActivity {
         // Call function to get state of lamp
         getLampStates();
 
-
+        // Event when click back icon button
         back.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -89,6 +89,7 @@ public class LampController extends AppCompatActivity {
                     bulb1.setVisibility(View.GONE);
                     bulb1_on.setVisibility(View.VISIBLE);
                     intensity1.setVisibility(View.VISIBLE);
+                    applyLamp(1); // Calling function applyLamp() to turn on the lamp
                     Toast.makeText(LampController.this, "Lamp 1 is on", Toast.LENGTH_SHORT).show();
                     // LED connection....
                     //
@@ -108,6 +109,7 @@ public class LampController extends AppCompatActivity {
                 }
                 else
                 {
+                    applyLamp(2); // Calling function applyLamp() to turn on the lamp
                     // THIS IS JUST A DUMMY ------EDIT THIS PART ONWARDS---------
                     lampStatus = 0;
                     intensity = 20;
@@ -132,6 +134,7 @@ public class LampController extends AppCompatActivity {
                     bulb2.setVisibility(View.GONE);
                     bulb2_on.setVisibility(View.VISIBLE);
                     intensity2.setVisibility(View.VISIBLE);
+                    applyLamp(3); // Calling function applyLamp() to turn on the lamp
                     Toast.makeText(LampController.this, "Lamp 2 is on", Toast.LENGTH_SHORT).show();
                     // LED connection....
                     //
@@ -139,6 +142,7 @@ public class LampController extends AppCompatActivity {
                 }
                 else
                 {
+                    applyLamp(4); // Calling function applyLamp() to turn on the lamp
                     // LED connection....
                     //
                     //
@@ -156,6 +160,7 @@ public class LampController extends AppCompatActivity {
             public void onCheckedChanged(CompoundButton switchButton3, boolean c) {
                 if(switchButton3.isChecked())
                 {
+                    applyLamp(5); // Calling function applyLamp() to turn on the lamp
                     sqlDB = myDB.getWritableDatabase();
                     sqlDB.delete("lamp", null, null);
                     sqlDB.delete("lampTimer", null, null);
@@ -170,6 +175,7 @@ public class LampController extends AppCompatActivity {
                 }
                 else
                 {
+                    applyLamp(6); // Calling function applyLamp() to turn on the lamp
                     // LED connection....
                     //
                     //
@@ -192,12 +198,14 @@ public class LampController extends AppCompatActivity {
         StringRequest stringRequest = new StringRequest(Request.Method.GET, url, new Response.Listener<String>() {
             @Override
             public void onResponse(String response) {
-                Toast.makeText(LampController.this, "Response: ", Toast.LENGTH_SHORT).show();
+                Log.d("Response: ", response);
+                Toast.makeText(LampController.this, "Response: " + response, Toast.LENGTH_SHORT).show();
             }
         }, new Response.ErrorListener() {
             @Override
             public void onErrorResponse(VolleyError error) {
-                Toast.makeText(LampController.this, error.toString(), Toast.LENGTH_SHORT).show();
+                Log.d("Response: ", String.valueOf(error));
+                Toast.makeText(LampController.this, "Response: " + error.toString(), Toast.LENGTH_SHORT).show();
             }
         });
 
@@ -215,12 +223,39 @@ public class LampController extends AppCompatActivity {
         StringRequest stringRequest = new StringRequest(Request.Method.GET, url, new Response.Listener<String>() {
             @Override
             public void onResponse(String response) {
-                Toast.makeText(LampController.this, "Response: ", Toast.LENGTH_SHORT).show();
+                Log.d("Response: ", response);
+                Toast.makeText(LampController.this, "Response: " + response, Toast.LENGTH_SHORT).show();
             }
         }, new Response.ErrorListener() {
             @Override
             public void onErrorResponse(VolleyError error) {
-                Toast.makeText(LampController.this, error.toString(), Toast.LENGTH_SHORT).show();
+                Log.d("Response: ", String.valueOf(error));
+                Toast.makeText(LampController.this, "Response: " + error.toString(), Toast.LENGTH_SHORT).show();
+            }
+        });
+
+        // Add the request to the RequestQueue
+        queue.add(stringRequest);
+    }
+
+    // Function to turn on/off lamp
+    void applyLamp(int input) {
+        // Instantiate the RequestQueue
+        RequestQueue queue = Volley.newRequestQueue(LampController.this);
+        String url = "http://192.168.0.1/state";
+
+        // Request a string response  from the URL
+        StringRequest stringRequest = new StringRequest(Request.Method.GET, url, new Response.Listener<String>() {
+            @Override
+            public void onResponse(String response) {
+                Log.d("Response: ", response);
+                Toast.makeText(LampController.this, "Response: " + response, Toast.LENGTH_SHORT).show();
+            }
+        }, new Response.ErrorListener() {
+            @Override
+            public void onErrorResponse(VolleyError error) {
+                Log.d("Response: ", String.valueOf(error));
+                Toast.makeText(LampController.this, "Response: " + error.toString(), Toast.LENGTH_SHORT).show();
             }
         });
 
@@ -230,43 +265,58 @@ public class LampController extends AppCompatActivity {
 
     // Create lamp data in SQLite
     private void create(String networkName, int lampStatus, int intensity) {
-        sqlDB = myDB.getWritableDatabase();
-        myDB.onUpgrade(sqlDB, 2, 1);
-        ContentValues cv = new ContentValues();
-        cv.put("ssid_name", networkName);
-        cv.put("connection", "1");
-        cv.put("status", lampStatus);
-        cv.put("intensity", intensity);
-        long id = sqlDB.insert("lamp", null, cv);
-        if (id == -1) {
-            Log.d("CREATE: ", "Fail");
+        // Use try-catch to ensure db is close no matter what happen
+        try {
+            sqlDB = myDB.getWritableDatabase();
+            ContentValues cv = new ContentValues();
+            cv.put("ssid_name", networkName);
+            cv.put("connection", "1");
+            cv.put("status", lampStatus);
+            cv.put("intensity", intensity);
+            long id = sqlDB.insert("lamp", null, cv);
+            if (id == -1) {
+                Log.d("CREATE: ", "Fail");
+            }
+            else {
+                Log.d("CREATE: ", "Success");
+            }
         }
-        else {
-            Log.d("CREATE: ", "Success");
+        finally {
+            sqlDB.close();
         }
-        //sqlDB.close();
     }
 
     // Update lamp data
     private void update(int id, int intensity, int lampStatus){
-        sqlDB = myDB.getWritableDatabase();
-        ContentValues cv = new ContentValues();
-        cv.put("status", lampStatus);
-        long result = sqlDB.update("lamp", cv, "id=?", new String[] {String.valueOf(id)} );
-        if (result == -1) {
-            Log.d("UPDATE: ", "Fail");
+        // Use try-catch to ensure db is close no matter what happen
+        try {
+            sqlDB = myDB.getWritableDatabase();
+            ContentValues cv = new ContentValues();
+            cv.put("status", lampStatus);
+            long result = sqlDB.update("lamp", cv, "id=?", new String[] {String.valueOf(id)} );
+            if (result == -1) {
+                Log.d("UPDATE: ", "Fail");
+            }
+            else {
+                Log.d("UPDATE: ", "Success");
+            }
         }
-        else {
-            Log.d("UPDATE: ", "Success");
+        finally {
+            sqlDB.close();
         }
-        //sqlDB.close();
     }
 
     // Delete table lamp
     private void delete() {
-        sqlDB = myDB.getWritableDatabase();
-        sqlDB.delete("lamp", "id=?", new String[] {String.valueOf(1)});
-        sqlDB.close();
-        Log.d("DELETE: ", "Successful");
+        // Use try-catch to ensure db is close no matter what happen
+        try {
+            sqlDB = myDB.getWritableDatabase();
+            sqlDB.delete("lamp", "id=?", new String[] {String.valueOf(1)});
+            sqlDB.close();
+            Log.d("DELETE: ", "Successful");
+        }
+        finally {
+            sqlDB.close();
+        }
     }
 }
