@@ -234,6 +234,15 @@ public class Timer extends AppCompatActivity {
         }
     }
 
+    // Method to handle the navigation page for which lamp to use to set the time
+    private void selectNavigationPage(int index) {
+        if (index != selectedIndex) {
+            selectorArr[selectedIndex].setVisibility(View.GONE); // Hide the current selector
+            selectorArr[index].setVisibility(View.VISIBLE); // Show the selector for the selected page
+            selectedIndex = index; // Update the selected index
+
+            // Perform any other actions or updates based on the selected index
+            // For example, you can update the content displayed on the screen
     //
     private void delete(int id) {
         // Use try-finally to ensure db is close no matter what happen

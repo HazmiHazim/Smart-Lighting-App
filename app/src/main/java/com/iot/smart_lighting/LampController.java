@@ -90,6 +90,7 @@ public class LampController extends AppCompatActivity {
                     bulb1.setVisibility(View.GONE);
                     bulb1_on.setVisibility(View.VISIBLE);
                     intensity1.setVisibility(View.VISIBLE);
+                    applyLamp(1); // Calling function applyLamp() to turn on the lamp
                     applyLamp(1);  // Calling function applyLamp() to turn on the lamp
                     Toast.makeText(LampController.this, "Lamp 1 is on", Toast.LENGTH_SHORT).show();
                     // LED connection....
@@ -135,6 +136,7 @@ public class LampController extends AppCompatActivity {
                     bulb2.setVisibility(View.GONE);
                     bulb2_on.setVisibility(View.VISIBLE);
                     intensity2.setVisibility(View.VISIBLE);
+                    applyLamp(3); // Calling function applyLamp() to turn on the lamp
                     applyLamp(3);  // Calling function applyLamp() to turn on the lamp
                     Toast.makeText(LampController.this, "Lamp 2 is on", Toast.LENGTH_SHORT).show();
                     // LED connection....
@@ -161,6 +163,7 @@ public class LampController extends AppCompatActivity {
             public void onCheckedChanged(CompoundButton switchButton3, boolean c) {
                 if(switchButton3.isChecked())
                 {
+                    applyLamp(5); // Calling function applyLamp() to turn on the lamp
                     sqlDB = myDB.getWritableDatabase();
                     sqlDB.delete("lamp", null, null);
                     sqlDB.delete("lampTimer", null, null);
@@ -192,6 +195,7 @@ public class LampController extends AppCompatActivity {
     // Function to ping to ESP32
     public void pingESP32() {
         // Instantiate the RequestQueue
+        RequestQueue queue = Volley.newRequestQueue(LampController.this);
         RequestQueue queue= Volley.newRequestQueue(LampController.this);
         String url = "http://192.168.0.1/ping";
 
@@ -240,6 +244,13 @@ public class LampController extends AppCompatActivity {
     }
 
     // Function to turn on/off lamp
+    void applyLamp(int input) {
+        // Instantiate the RequestQueue
+        RequestQueue queue = Volley.newRequestQueue(LampController.this);
+        String url = "http://192.168.0.1/state";
+
+        // Request a string response  from the URL
+        StringRequest stringRequest = new StringRequest(Request.Method.GET, url, new Response.Listener<String>() {
     public void applyLamp(int input) {
         // Instantiate the RequestQueue
         RequestQueue queue = Volley.newRequestQueue(LampController.this);
@@ -267,6 +278,7 @@ public class LampController extends AppCompatActivity {
 
     // Create lamp data in SQLite
     private void create(String networkName, int lampStatus, int intensity) {
+        // Use try-catch to ensure db is close no matter what happen
         // Use try-finally to ensure db is close no matter what happen
         try {
             sqlDB = myDB.getWritableDatabase();
@@ -290,6 +302,7 @@ public class LampController extends AppCompatActivity {
 
     // Update lamp data
     private void update(int id, int intensity, int lampStatus){
+        // Use try-catch to ensure db is close no matter what happen
         // Use try-finally to ensure db is close no matter what happen
         try {
             sqlDB = myDB.getWritableDatabase();
@@ -310,6 +323,11 @@ public class LampController extends AppCompatActivity {
 
     // Delete table lamp
     private void delete() {
+        // Use try-catch to ensure db is close no matter what happen
+        try {
+            sqlDB = myDB.getWritableDatabase();
+            sqlDB.delete("lamp", "id=?", new String[] {String.valueOf(1)});
+            sqlDB.close();
         // Use try-finally to ensure db is close no matter what happen
         try {
             sqlDB = myDB.getWritableDatabase();
