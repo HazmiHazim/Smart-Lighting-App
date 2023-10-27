@@ -4,6 +4,7 @@
     package="com.iot.smart_lighting">
 
     <!-- To use volley and connect to the network -->
+
     <uses-permission android:name="android.permission.INTERNET"/>
 
     <application

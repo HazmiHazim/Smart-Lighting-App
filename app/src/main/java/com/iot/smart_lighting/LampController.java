@@ -23,6 +23,7 @@ import com.android.volley.toolbox.StringRequest;
 import com.android.volley.toolbox.Volley;
 import com.iot.smart_lighting.Model.SmartLampDB;
 
+import java.util.Queue;
 
 public class LampController extends AppCompatActivity {
 
@@ -90,6 +91,7 @@ public class LampController extends AppCompatActivity {
                     bulb1_on.setVisibility(View.VISIBLE);
                     intensity1.setVisibility(View.VISIBLE);
                     applyLamp(1); // Calling function applyLamp() to turn on the lamp
+                    applyLamp(1);  // Calling function applyLamp() to turn on the lamp
                     Toast.makeText(LampController.this, "Lamp 1 is on", Toast.LENGTH_SHORT).show();
                     // LED connection....
                     //
@@ -135,6 +137,7 @@ public class LampController extends AppCompatActivity {
                     bulb2_on.setVisibility(View.VISIBLE);
                     intensity2.setVisibility(View.VISIBLE);
                     applyLamp(3); // Calling function applyLamp() to turn on the lamp
+                    applyLamp(3);  // Calling function applyLamp() to turn on the lamp
                     Toast.makeText(LampController.this, "Lamp 2 is on", Toast.LENGTH_SHORT).show();
                     // LED connection....
                     //
@@ -168,6 +171,7 @@ public class LampController extends AppCompatActivity {
                     bulb3.setVisibility(View.GONE);
                     bulb3_on.setVisibility(View.VISIBLE);
                     intensity3.setVisibility(View.VISIBLE);
+                    applyLamp(5);  // Calling function applyLamp() to turn on the lamp
                     Toast.makeText(LampController.this, "Lamp 3 is on", Toast.LENGTH_SHORT).show();
                     // LED connection....
                     //
@@ -192,6 +196,7 @@ public class LampController extends AppCompatActivity {
     public void pingESP32() {
         // Instantiate the RequestQueue
         RequestQueue queue = Volley.newRequestQueue(LampController.this);
+        RequestQueue queue= Volley.newRequestQueue(LampController.this);
         String url = "http://192.168.0.1/ping";
 
         // Request a string response  from the URL
@@ -246,6 +251,14 @@ public class LampController extends AppCompatActivity {
 
         // Request a string response  from the URL
         StringRequest stringRequest = new StringRequest(Request.Method.GET, url, new Response.Listener<String>() {
+    public void applyLamp(int input) {
+        // Instantiate the RequestQueue
+        RequestQueue queue = Volley.newRequestQueue(LampController.this);
+        String url = "http://192.168.0.1/lamp";
+
+        // Request a string response  from the URL
+        // Use POST method to send the request by the user
+        StringRequest stringRequest = new StringRequest(Request.Method.POST, url, new Response.Listener<String>() {
             @Override
             public void onResponse(String response) {
                 Log.d("Response: ", response);
@@ -266,6 +279,7 @@ public class LampController extends AppCompatActivity {
     // Create lamp data in SQLite
     private void create(String networkName, int lampStatus, int intensity) {
         // Use try-catch to ensure db is close no matter what happen
+        // Use try-finally to ensure db is close no matter what happen
         try {
             sqlDB = myDB.getWritableDatabase();
             ContentValues cv = new ContentValues();
@@ -289,6 +303,7 @@ public class LampController extends AppCompatActivity {
     // Update lamp data
     private void update(int id, int intensity, int lampStatus){
         // Use try-catch to ensure db is close no matter what happen
+        // Use try-finally to ensure db is close no matter what happen
         try {
             sqlDB = myDB.getWritableDatabase();
             ContentValues cv = new ContentValues();
@@ -313,6 +328,10 @@ public class LampController extends AppCompatActivity {
             sqlDB = myDB.getWritableDatabase();
             sqlDB.delete("lamp", "id=?", new String[] {String.valueOf(1)});
             sqlDB.close();
+        // Use try-finally to ensure db is close no matter what happen
+        try {
+            sqlDB = myDB.getWritableDatabase();
+            sqlDB.delete("lamp", "id=?", new String[] {String.valueOf(1)});
             Log.d("DELETE: ", "Successful");
         }
         finally {
