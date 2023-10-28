@@ -107,9 +107,9 @@ public class LampController extends AppCompatActivity {
                     }
                     System.out.println("Lamp Keys: " + lampKeys);
                     // Call function to get initial state of lamp
-                    getLampStates(switch1, 0);
-                    getLampStates(switch2, 1);
-                    getLampStates(switch3, 2);
+                    getInitialStates(switch1, 0);
+                    getInitialStates(switch2, 1);
+                    getInitialStates(switch3, 2);
                 }
             }
             @Override
@@ -141,7 +141,7 @@ public class LampController extends AppCompatActivity {
     }
 
     // Function to set initial state of switch button
-    private void getLampStates(Switch switchButton, int lampId) {
+    private void getInitialStates(Switch switchButton, int lampId) {
         dbRef.child("lamp").child(lampKeys.get(lampId)).addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {
@@ -168,19 +168,20 @@ public class LampController extends AppCompatActivity {
                     bulbOn.setVisibility(View.VISIBLE);
                     intensity.setVisibility(View.VISIBLE);
                     updateLampState(lampId, 1);
-                    Toast.makeText(LampController.this, "Lamp " + (lampId + 1) +  "is off", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(LampController.this, "Lamp " + (lampId + 1) +  " is on", Toast.LENGTH_SHORT).show();
                 }
                 else {
                     bulbOff.setVisibility(View.VISIBLE);
                     bulbOn.setVisibility(View.GONE);
                     intensity.setVisibility(View.GONE);
                     updateLampState(lampId, 0);
-                    Toast.makeText(LampController.this, "Lamp " + (lampId + 1) +  "is off", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(LampController.this, "Lamp " + (lampId + 1) +  " is off", Toast.LENGTH_SHORT).show();
                 }
             }
         });
     }
 
+    // Function to update initial state of each lamp
     private void updateLampState(int lampId, int newStatus) {
         Map<String, Object> update = new HashMap<>();
         update.put("status", newStatus);
