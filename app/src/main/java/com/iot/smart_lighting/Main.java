@@ -21,6 +21,9 @@ public class Main extends AppCompatActivity {
     CardView feature1, feature2, feature3, feature4;
     ImageView settingMenu;
 
+    // Instantiate ESP32 Class
+    Esp32 esp32 = new Esp32(Main.this);
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -31,6 +34,12 @@ public class Main extends AppCompatActivity {
         feature3 = findViewById(R.id.cardView3);
         feature4 = findViewById(R.id.cardView4);
         settingMenu = findViewById(R.id.setting_btn1);
+
+        // Call Ping Function To Connect with ESP32
+        esp32.pingESP32();
+
+        // Call getLampState Function To Get Lamp State
+        esp32.getLampState();
 
         settingMenu.setOnClickListener(new View.OnClickListener() {
             @Override

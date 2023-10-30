@@ -1,6 +1,7 @@
 package com.iot.smart_lighting;
 
 import android.content.ContentValues;
+import android.content.Context;
 import android.content.Intent;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
@@ -41,6 +42,9 @@ public class LampController extends AppCompatActivity {
     Switch switch1, switch2, switch3;
     ImageView back, setting, bulb1, bulb2, bulb3, bulb1_on, bulb2_on, bulb3_on;
     SeekBar intensity1, intensity2, intensity3;
+
+    // Instantiate ESP32 Class
+    Esp32 esp32 = new Esp32(LampController.this);
 
     private DatabaseReference dbRef;
 
@@ -119,7 +123,7 @@ public class LampController extends AppCompatActivity {
         });
 
         // Call function to ping to the ESP32
-        pingESP32();
+        //esp32.pingESP32();
 
         // Event when click switch 1
         eventSwitch(switch1, bulb1, bulb1_on, intensity1, 0);
@@ -186,81 +190,5 @@ public class LampController extends AppCompatActivity {
         Map<String, Object> update = new HashMap<>();
         update.put("status", newStatus);
         dbRef.child("lamp").child(lampKeys.get(lampId)).updateChildren(update);
-    }
-
-    // Function to ping to ESP32
-    public void pingESP32() {
-        // Instantiate the RequestQueue
-        RequestQueue queue = Volley.newRequestQueue(LampController.this);
-        String url = "http://192.168.0.1/ping";
-
-        // Request a string response  from the URL
-        StringRequest stringRequest = new StringRequest(Request.Method.GET, url, new Response.Listener<String>() {
-            @Override
-            public void onResponse(String response) {
-                Log.d("Response: ", response);
-                Toast.makeText(LampController.this, "Response: " + response, Toast.LENGTH_SHORT).show();
-            }
-        }, new Response.ErrorListener() {
-            @Override
-            public void onErrorResponse(VolleyError error) {
-                Log.d("Response: ", String.valueOf(error));
-                Toast.makeText(LampController.this, "Response: " + error.toString(), Toast.LENGTH_SHORT).show();
-            }
-        });
-
-        // Add the request to the RequestQueue
-        queue.add(stringRequest);
-    }
-
-    // Function to get state of the lamp
-    public void getLampStates() {
-        // Instantiate the RequestQueue
-        RequestQueue queue = Volley.newRequestQueue(LampController.this);
-        String url = "http://192.168.0.1/state";
-
-        // Request a string response  from the URL
-        StringRequest stringRequest = new StringRequest(Request.Method.GET, url, new Response.Listener<String>() {
-            @Override
-            public void onResponse(String response) {
-                Log.d("Response: ", response);
-                Toast.makeText(LampController.this, "Response: " + response, Toast.LENGTH_SHORT).show();
-            }
-        }, new Response.ErrorListener() {
-            @Override
-            public void onErrorResponse(VolleyError error) {
-                Log.d("Response: ", String.valueOf(error));
-                Toast.makeText(LampController.this, "Response: " + error.toString(), Toast.LENGTH_SHORT).show();
-            }
-        });
-
-        // Add the request to the RequestQueue
-        queue.add(stringRequest);
-    }
-
-    // Function to turn on/off lamp
-    public void applyLamp(int input) {
-        // Instantiate the RequestQueue
-        RequestQueue queue = Volley.newRequestQueue(LampController.this);
-        String url = "http://192.168.0.1/lamp";
-
-        // Request a string response  from the URL
-        // Use POST method to send the request by the user
-        StringRequest stringRequest = new StringRequest(Request.Method.POST, url, new Response.Listener<String>() {
-            @Override
-            public void onResponse(String response) {
-                Log.d("Response: ", response);
-                Toast.makeText(LampController.this, "Response: " + response, Toast.LENGTH_SHORT).show();
-            }
-        }, new Response.ErrorListener() {
-            @Override
-            public void onErrorResponse(VolleyError error) {
-                Log.d("Response: ", String.valueOf(error));
-                Toast.makeText(LampController.this, "Response: " + error.toString(), Toast.LENGTH_SHORT).show();
-            }
-        });
-
-        // Add the request to the RequestQueue
-        queue.add(stringRequest);
     }
 }
