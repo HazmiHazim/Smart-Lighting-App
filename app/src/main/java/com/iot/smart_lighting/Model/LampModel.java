@@ -1,6 +1,6 @@
 package com.iot.smart_lighting.Model;
 
-public class Lamp {
+public class LampModel {
 
     private int id;
     private String ssidName;
@@ -8,9 +8,9 @@ public class Lamp {
     private int connection;
     private int status;
 
-    public Lamp() {}
+    public LampModel() {}
 
-    public Lamp(int id, String ssidName, int intensity, int connection, int status) {
+    public LampModel(int id, String ssidName, int intensity, int connection, int status) {
         this.id = id;
         this.ssidName = ssidName;
         this.intensity = intensity;

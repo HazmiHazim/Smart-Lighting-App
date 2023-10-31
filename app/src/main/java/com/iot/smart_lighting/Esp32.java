@@ -1,6 +1,9 @@
 package com.iot.smart_lighting;
 
 import android.content.Context;
+import android.net.wifi.SupplicantState;
+import android.net.wifi.WifiInfo;
+import android.net.wifi.WifiManager;
 import android.util.Log;
 import android.widget.Toast;
 
@@ -21,6 +24,18 @@ public class Esp32 {
         this.queue = Volley.newRequestQueue(context);  // Instantiate the RequestQueue
     }
 
+    // Function to Get Network SSID
+    public String getESP32Ssid() {
+        WifiManager wifiManager = (WifiManager) context.getSystemService(Context.WIFI_SERVICE);
+        WifiInfo wifiInfo = wifiManager.getConnectionInfo();
+        if (wifiInfo.getSupplicantState() == SupplicantState.COMPLETED) {
+            String connectedSsid = wifiInfo.getSSID();
+            Log.d("SSID", "Connected SSID: " + connectedSsid);
+            return connectedSsid;
+        }
+        return "";
+    }
+
     private void sendRequest(String url, int method, Response.Listener<String> success, Response.ErrorListener error) {
         StringRequest stringRequest = new StringRequest(method, url, success, error);
         queue.add(stringRequest);
@@ -28,39 +43,14 @@ public class Esp32 {
 
     // Function to ping to ESP32
     public void pingESP32() {
-        String url = "http://192.168.4.1/ping";
+        String url = "http://192.168.4.1";
 
         // Request a string response  from the URL
         Response.Listener<String> success = new Response.Listener<String>() {
             @Override
             public void onResponse(String response) {
                 Log.d("Response: ", response);
-                Toast.makeText(context, "Response: " + response, Toast.LENGTH_SHORT).show();
-            }
-        };
-
-        Response.ErrorListener error = new Response.ErrorListener() {
-            @Override
-            public void onErrorResponse(VolleyError error) {
-                Log.d("Response: ", String.valueOf(error));
-                Toast.makeText(context, "Response: " + error.toString(), Toast.LENGTH_SHORT).show();
-            }
-        };
-
-        // Add the request to the RequestQueue
-        sendRequest(url, Request.Method.GET, success, error);
-    }
-
-    // Function to get state of the lamp
-    public void getLampState() {
-        String url = "http://192.168.4.1/state";
-
-        // Request a string response  from the URL
-        Response.Listener<String> success = new Response.Listener<String>() {
-            @Override
-            public void onResponse(String response) {
-                Log.d("Response: ", response);
-                Toast.makeText(context, "Response: " + response, Toast.LENGTH_SHORT).show();
+                Toast.makeText(context, "Response: Ping!", Toast.LENGTH_SHORT).show();
             }
         };
 
@@ -77,10 +67,8 @@ public class Esp32 {
     }
 
     // Function to turn on/off lamp
-    public void applyLamp(int gpio) {
-        String url = "http://192.168.4.1/lamp";
-
-        // Request a string response  from the URL
+    public void applyLamp(String url) {
+        // Request a string response from the URL
         // Use POST method to send the request by the user
         Response.Listener<String> success = new Response.Listener<String>() {
             @Override

@@ -3,9 +3,6 @@ buildscript {
         agp_version = '8.1.1'
         agp_version1 = '8.1.2'
     }
-    dependencies {
-        classpath 'com.google.gms:google-services:4.4.0'
-    }
 }
 plugins {
     id 'com.android.application' version '8.1.2' apply false

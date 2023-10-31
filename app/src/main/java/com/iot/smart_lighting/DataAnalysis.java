@@ -39,8 +39,7 @@ public class DataAnalysis extends AppCompatActivity {
         back.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Intent intent = new Intent(DataAnalysis.this, Main.class);
-                startActivity(intent);
+                finish();
             }
         });
 
@@ -50,7 +49,7 @@ public class DataAnalysis extends AppCompatActivity {
         lineChart.setDescription(description);
         lineChart.getAxisRight().setDrawLabels(false);
 
-        xValues = Arrays.asList("Lamp 1", "Lamp 2", "Lamp 3");
+        xValues = Arrays.asList("LampModel 1", "LampModel 2", "LampModel 3");
 
         XAxis x = lineChart.getXAxis();
         x.setPosition(XAxis.XAxisPosition.BOTTOM);
@@ -85,13 +84,13 @@ public class DataAnalysis extends AppCompatActivity {
         entries3.add(new Entry(2, 40f));
         entries3.add(new Entry(3, 25f));
 
-        LineDataSet dataSet1 = new LineDataSet(entries1, "Lamp 1");
+        LineDataSet dataSet1 = new LineDataSet(entries1, "LampModel 1");
         dataSet1.setColor(Color.GREEN);
 
-        LineDataSet dataSet2 = new LineDataSet(entries2, "Lamp 2");
+        LineDataSet dataSet2 = new LineDataSet(entries2, "LampModel 2");
         dataSet2.setColor(Color.BLUE);
 
-        LineDataSet dataSet3 = new LineDataSet(entries3, "Lamp 3");
+        LineDataSet dataSet3 = new LineDataSet(entries3, "LampModel 3");
         dataSet3.setColor(Color.RED);
 
         LineData lineData = new LineData(dataSet1, dataSet2, dataSet3);

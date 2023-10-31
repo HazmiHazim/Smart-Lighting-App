@@ -117,8 +117,7 @@ public class Timer extends AppCompatActivity {
         back.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Intent intent = new Intent(Timer.this, Main.class);
-                startActivity(intent);
+                finish();
             }
         });
 
