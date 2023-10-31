@@ -115,7 +115,7 @@ public class Main extends AppCompatActivity {
             String query = "SELECT * FROM lamp";
             Cursor cursor = sqlDB.rawQuery(query, null);
             if (cursor != null && cursor.getCount() > 0) {
-                Toast.makeText(Main.this, "Locally Data is Retrieved.", Toast.LENGTH_SHORT).show();
+                Toast.makeText(Main.this, "Locally Data is Received.", Toast.LENGTH_SHORT).show();
             }
             else {
                 String esp32Ssid = esp32.getESP32Ssid();

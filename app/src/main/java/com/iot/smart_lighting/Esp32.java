@@ -7,6 +7,7 @@ import android.net.wifi.WifiManager;
 import android.util.Log;
 import android.widget.Toast;
 
+import com.android.volley.NoConnectionError;
 import com.android.volley.Request;
 import com.android.volley.RequestQueue;
 import com.android.volley.Response;
@@ -57,6 +58,32 @@ public class Esp32 {
         Response.ErrorListener error = new Response.ErrorListener() {
             @Override
             public void onErrorResponse(VolleyError error) {
+                Log.d("Response: ", String.valueOf(error));
+                Toast.makeText(context, "Response: " + error.toString(), Toast.LENGTH_SHORT).show();
+            }
+        };
+
+        // Add the request to the RequestQueue
+        sendRequest(url, Request.Method.GET, success, error);
+    }
+
+    // Function to get initial state of lamp
+    public void getLampStates(String url) {
+        // Request a string response  from the URL
+        Response.Listener<String> success = new Response.Listener<String>() {
+            @Override
+            public void onResponse(String response) {
+                Log.d("Response: ", response);
+                Toast.makeText(context, "Response: " + response, Toast.LENGTH_SHORT).show();
+            }
+        };
+
+        Response.ErrorListener error = new Response.ErrorListener() {
+            @Override
+            public void onErrorResponse(VolleyError error) {
+                if (error instanceof NoConnectionError) {
+                    Log.e("NoConnectionError", error.toString());
+                }
                 Log.d("Response: ", String.valueOf(error));
                 Toast.makeText(context, "Response: " + error.toString(), Toast.LENGTH_SHORT).show();
             }

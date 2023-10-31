@@ -63,17 +63,15 @@ public class LampController extends AppCompatActivity {
         // Call getLampState Function To Get Lamp State
         //esp32.getLampState();
 
-        // Check if lamp reference is empty then create lamp reference, if not then save the ref as an array
-        getInitialStates(switch1, bulb1, bulb1_on, intensity1, 1);
-        getInitialStates(switch2, bulb2, bulb2_on, intensity2, 2);
-        getInitialStates(switch3, bulb3, bulb3_on, intensity3, 3);
+        // Get initial state of each lamp
+        getInitialStates(switch1, bulb1, bulb1_on, intensity1, 1, "http://192.168.4.1/state1/on", "http://192.168.4.1/state1/off");
+        getInitialStates(switch2, bulb2, bulb2_on, intensity2, 2, "http://192.168.4.1/state2/on", "http://192.168.4.1/state2/off");
+        getInitialStates(switch3, bulb3, bulb3_on, intensity3, 3, "http://192.168.4.1/state3/on", "http://192.168.4.1/state3/off");
 
         // Event when click switch 1
         eventSwitch(switch1, bulb1, bulb1_on, intensity1, 1, "http://192.168.4.1/lamp1/on", "http://192.168.4.1/lamp1/off");
-
         // Event when click switch 2
         eventSwitch(switch2, bulb2, bulb2_on, intensity2, 2, "http://192.168.4.1/lamp2/on", "http://192.168.4.1/lamp2/off");
-
         // Event when click switch 3
         eventSwitch(switch3, bulb3, bulb3_on, intensity3, 3, "http://192.168.4.1/lamp3/on", "http://192.168.4.1/lamp3/off");
 
@@ -87,7 +85,7 @@ public class LampController extends AppCompatActivity {
     }
 
     // Function to Set Initial State of Switch Button
-    private void getInitialStates(Switch switchButton, ImageView bulbOff, ImageView bulbOn, SeekBar intensity, int lampId) {
+    private void getInitialStates(Switch switchButton, ImageView bulbOff, ImageView bulbOn, SeekBar intensity, int lampId, String onEndPoint, String offEndPoint) {
         // Use try-finally to ensure db is close no matter what happen
         try {
             String query = "SELECT * FROM lamp WHERE id = ?";
@@ -100,12 +98,14 @@ public class LampController extends AppCompatActivity {
                     bulbOff.setVisibility(View.VISIBLE);
                     bulbOn.setVisibility(View.GONE);
                     intensity.setVisibility(View.GONE);
+                    esp32.getLampStates(onEndPoint);
                 }
                 else {
                     switchButton.setChecked(true);
                     bulbOff.setVisibility(View.GONE);
                     bulbOn.setVisibility(View.VISIBLE);
                     intensity.setVisibility(View.VISIBLE);
+                    esp32.getLampStates(offEndPoint);
                 }
             }
         }
@@ -125,7 +125,6 @@ public class LampController extends AppCompatActivity {
                     intensity.setVisibility(View.VISIBLE);
                     esp32.applyLamp(onEndpoint);
                     updateLampState(lampId, 1);
-                    Toast.makeText(LampController.this, "Lamp " + (lampId) +  " is on", Toast.LENGTH_SHORT).show();
                 }
                 else {
                     bulbOff.setVisibility(View.VISIBLE);
@@ -133,7 +132,6 @@ public class LampController extends AppCompatActivity {
                     intensity.setVisibility(View.GONE);
                     esp32.applyLamp(offEndpoint);
                     updateLampState(lampId, 0);
-                    Toast.makeText(LampController.this, "Lamp " + (lampId) +  " is off", Toast.LENGTH_SHORT).show();
                 }
             }
         });
