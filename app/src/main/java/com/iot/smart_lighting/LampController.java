@@ -4,6 +4,7 @@ import android.content.ContentValues;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.widget.CompoundButton;
 import android.widget.ImageView;
@@ -72,6 +73,9 @@ public class LampController extends AppCompatActivity {
         // Event when click switch 3
         eventSwitch(switch3, bulb3, bulb3_on, intensity3, 3, "http://192.168.4.1/lamp3/on", "http://192.168.4.1/lamp3/off");
 
+        // Event when slide the seek bar
+        eventSeekBar(intensity1);
+
         // Event when click back icon button
         back.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -130,6 +134,25 @@ public class LampController extends AppCompatActivity {
                     updateLampState(lampId, 0);
                     Toast.makeText(LampController.this, "Turn off lamp " + lampId, Toast.LENGTH_SHORT).show();
                 }
+            }
+        });
+    }
+
+    private void eventSeekBar(SeekBar seekBar) {
+        seekBar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
+            @Override
+            public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
+                Log.d("Seek Bar Value: ", String.valueOf(seekBar.getProgress()));
+            }
+
+            @Override
+            public void onStartTrackingTouch(SeekBar seekBar) {
+                // Do Something
+            }
+
+            @Override
+            public void onStopTrackingTouch(SeekBar seekBar) {
+                // Do Something
             }
         });
     }
