@@ -3,6 +3,7 @@ package com.iot.smart_lighting;
 import android.content.ContentValues;
 import android.content.Intent;
 import android.database.sqlite.SQLiteDatabase;
+import android.graphics.Color;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
@@ -53,6 +54,18 @@ public class ColourEditor extends AppCompatActivity {
         // Make bar function colour changing with colour wheel
         colourWheel.addSaturationBar(saturation);
         colourWheel.addOpacityBar(opacity);
+
+        colourWheel.setOnColorSelectedListener(new ColorPicker.OnColorSelectedListener() {
+            @Override
+            public void onColorSelected(int color) {
+                int red = Color.red(color);
+                int green = Color.green(color);
+                int blue = Color.blue(color);
+
+                int rgb = Color.rgb(red, green, blue);
+                System.out.println("Color Value: " + rgb);
+            }
+        });
 
         saveBtn.setOnClickListener(new View.OnClickListener() {
             @Override

@@ -74,7 +74,7 @@ public class Esp32 {
             @Override
             public void onResponse(String response) {
                 Log.d("Response: ", response);
-                Toast.makeText(context, "Response: " + response, Toast.LENGTH_SHORT).show();
+                //Toast.makeText(context, "Response: " + response, Toast.LENGTH_SHORT).show();
             }
         };
 
@@ -82,7 +82,7 @@ public class Esp32 {
             @Override
             public void onErrorResponse(VolleyError error) {
                 if (error instanceof NoConnectionError) {
-                    Log.e("NoConnectionError", error.toString());
+                    Log.e("No Connection Error: ", error.toString());
                 }
                 Log.d("Response: ", String.valueOf(error));
                 Toast.makeText(context, "Response: " + error.toString(), Toast.LENGTH_SHORT).show();
@@ -101,7 +101,7 @@ public class Esp32 {
             @Override
             public void onResponse(String response) {
                 Log.d("Response: ", response);
-                Toast.makeText(context, "Response: " + response, Toast.LENGTH_SHORT).show();
+                //Toast.makeText(context, "Response: " + response, Toast.LENGTH_SHORT).show();
             }
         };
 

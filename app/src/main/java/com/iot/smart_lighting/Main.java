@@ -1,7 +1,9 @@
 package com.iot.smart_lighting;
 
+import android.Manifest;
 import android.content.ContentValues;
 import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.os.Bundle;
@@ -45,11 +47,11 @@ public class Main extends AppCompatActivity {
         // Instantiate ESP32 class
         esp32 = new Esp32(Main.this);
 
-        // Call SQLite function to create data if not exists, if exists then do nothing
-        createOrRetrieve();
-
         // Call ping function to connect with ESP32
         esp32.pingESP32();
+
+        // Ask for permission to access location
+        requestPermissions(new String[]{Manifest.permission.ACCESS_FINE_LOCATION}, 200);
 
         settingMenu.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -60,10 +62,9 @@ public class Main extends AppCompatActivity {
                 popupMenu.setOnMenuItemClickListener(new PopupMenu.OnMenuItemClickListener() {
                     @Override
                     public boolean onMenuItemClick(MenuItem menuItem) {
-                        if(menuItem.getItemId() == R.id.darkMode) {
+                        if (menuItem.getItemId() == R.id.darkMode) {
                             // Handle dark mode
-                        }
-                        else {
+                        } else {
                             // Handle light mode
                         }
                         return true;
@@ -107,17 +108,29 @@ public class Main extends AppCompatActivity {
         });
     }
 
-    public  void createOrRetrieve() {
+    @Override
+    public void onRequestPermissionsResult(int requestCode, String[] permissions, int[] granResults) {
+        super.onRequestPermissionsResult(requestCode, permissions, granResults);
+        if (requestCode == 200) {
+            if (granResults.length > 0 && granResults[0] == PackageManager.PERMISSION_GRANTED) {
+                // Call SQLite function to create data if not exists, if exists then do nothing
+                createOrRetrieve();
+            } else {
+                Toast.makeText(Main.this, "Permission to access location is required for data-saving purposes.", Toast.LENGTH_SHORT).show();
+            }
+        }
+    }
+
+    public void createOrRetrieve() {
         // Use try-finally to ensure db is close no matter what happen
         try {
             // Open The Database for Reading
             sqlDB = myDB.getReadableDatabase();
             String query = "SELECT * FROM lamp";
             Cursor cursor = sqlDB.rawQuery(query, null);
-            if (cursor != null && cursor.getCount() > 0) {
-                Toast.makeText(Main.this, "Locally Data is Received.", Toast.LENGTH_SHORT).show();
-            }
-            else {
+            if (cursor != null && cursor.moveToFirst()) {
+                //Toast.makeText(Main.this, "Locally Data is Received.", Toast.LENGTH_SHORT).show();
+            } else {
                 String esp32Ssid = esp32.getESP32Ssid();
                 Log.d("SSID", "Retrieved SSID: " + esp32Ssid);
                 Log.d("SSID", "Comparison result: " + esp32Ssid.equalsIgnoreCase("\"ESP32-SMART-LIGHTING\""));
@@ -128,26 +141,28 @@ public class Main extends AppCompatActivity {
                     createData(2, esp32Ssid, 0, 1, 0);
                     // Lamp 3
                     createData(3, esp32Ssid, 0, 1, 0);
-                }
-                else {
+                } else {
                     Toast.makeText(Main.this, "Connection Failed.", Toast.LENGTH_SHORT).show();
                 }
             }
-        }
-        finally {
-            //sqlDB.close();
+        } finally {
+            sqlDB.close();
         }
     }
 
     // Function to create a data into local database by given parameters
     private void createData(int id, String ssid, int intensity, int connection, int status) {
-        sqlDB = myDB.getWritableDatabase();
-        ContentValues cv = new ContentValues();
-        cv.put("id", id);
-        cv.put("ssid_name", ssid);
-        cv.put("intensity", intensity);
-        cv.put("connection", connection);
-        cv.put("status", status);
-        sqlDB.insert("lamp", null, cv);
+        try {
+            sqlDB = myDB.getWritableDatabase();
+            ContentValues cv = new ContentValues();
+            cv.put("id", id);
+            cv.put("ssid_name", ssid);
+            cv.put("intensity", intensity);
+            cv.put("connection", connection);
+            cv.put("status", status);
+            sqlDB.insert("lamp", null, cv);
+        } finally {
+            sqlDB.close();
+        }
     }
 }

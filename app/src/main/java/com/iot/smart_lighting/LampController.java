@@ -60,9 +60,6 @@ public class LampController extends AppCompatActivity {
         // Instantiate ESP32 Class
         esp32 = new Esp32(LampController.this);
 
-        // Call getLampState Function To Get Lamp State
-        //esp32.getLampState();
-
         // Get initial state of each lamp
         getInitialStates(switch1, bulb1, bulb1_on, intensity1, 1, "http://192.168.4.1/state1/on", "http://192.168.4.1/state1/off");
         getInitialStates(switch2, bulb2, bulb2_on, intensity2, 2, "http://192.168.4.1/state2/on", "http://192.168.4.1/state2/off");
@@ -90,7 +87,7 @@ public class LampController extends AppCompatActivity {
         try {
             String query = "SELECT * FROM lamp WHERE id = ?";
             sqlDB = myDB.getReadableDatabase();
-            Cursor cursor = sqlDB.rawQuery(query, new String[] {String.valueOf(lampId)});
+            Cursor cursor = sqlDB.rawQuery(query, new String[]{String.valueOf(lampId)});
             if (cursor.moveToFirst()) {
                 int status = cursor.getInt(cursor.getColumnIndexOrThrow("status"));
                 if (status == 0) {
@@ -99,8 +96,7 @@ public class LampController extends AppCompatActivity {
                     bulbOn.setVisibility(View.GONE);
                     intensity.setVisibility(View.GONE);
                     esp32.getLampStates(onEndPoint);
-                }
-                else {
+                } else {
                     switchButton.setChecked(true);
                     bulbOff.setVisibility(View.GONE);
                     bulbOn.setVisibility(View.VISIBLE);
@@ -108,9 +104,9 @@ public class LampController extends AppCompatActivity {
                     esp32.getLampStates(offEndPoint);
                 }
             }
-        }
-        finally {
-            //sqlDB.close();
+            cursor.close();
+        } finally {
+            sqlDB.close();
         }
     }
 
@@ -125,13 +121,14 @@ public class LampController extends AppCompatActivity {
                     intensity.setVisibility(View.VISIBLE);
                     esp32.applyLamp(onEndpoint);
                     updateLampState(lampId, 1);
-                }
-                else {
+                    Toast.makeText(LampController.this, "Turn on lamp " + lampId, Toast.LENGTH_SHORT).show();
+                } else {
                     bulbOff.setVisibility(View.VISIBLE);
                     bulbOn.setVisibility(View.GONE);
                     intensity.setVisibility(View.GONE);
                     esp32.applyLamp(offEndpoint);
                     updateLampState(lampId, 0);
+                    Toast.makeText(LampController.this, "Turn off lamp " + lampId, Toast.LENGTH_SHORT).show();
                 }
             }
         });
@@ -145,9 +142,8 @@ public class LampController extends AppCompatActivity {
             sqlDB = myDB.getWritableDatabase();
             ContentValues cv = new ContentValues();
             cv.put("status", newStatus);
-            long result = sqlDB.update("lamp", cv, "id = ?", new String[] {String.valueOf(lampId)});
-        }
-        finally {
+            sqlDB.update("lamp", cv, "id = ?", new String[]{String.valueOf(lampId)});
+        } finally {
             sqlDB.close();
         }
     }
