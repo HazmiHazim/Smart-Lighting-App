@@ -29,6 +29,9 @@ public class LampController extends AppCompatActivity {
     // Declare ESP32 Class
     Esp32 esp32;
 
+    // Initialize intensity value to use to get to control LED lamp
+    int intensityValue = 255;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -62,19 +65,21 @@ public class LampController extends AppCompatActivity {
         esp32 = new Esp32(LampController.this);
 
         // Get initial state of each lamp
-        getInitialStates(switch1, bulb1, bulb1_on, intensity1, 1, "http://192.168.4.1/state1/on", "http://192.168.4.1/state1/off");
-        getInitialStates(switch2, bulb2, bulb2_on, intensity2, 2, "http://192.168.4.1/state2/on", "http://192.168.4.1/state2/off");
-        getInitialStates(switch3, bulb3, bulb3_on, intensity3, 3, "http://192.168.4.1/state3/on", "http://192.168.4.1/state3/off");
+        getInitialStates(switch1, bulb1, bulb1_on, intensity1, 1);
+        getInitialStates(switch2, bulb2, bulb2_on, intensity2, 2);
+        getInitialStates(switch3, bulb3, bulb3_on, intensity3, 3);
 
         // Event when click switch 1
-        eventSwitch(switch1, bulb1, bulb1_on, intensity1, 1, "http://192.168.4.1/lamp1/on", "http://192.168.4.1/lamp1/off");
+        eventSwitch(switch1, bulb1, bulb1_on, intensity1, 1, "http://192.168.4.1/lamp1/on?value=" + intensityValue, "http://192.168.4.1/lamp1/off");
         // Event when click switch 2
-        eventSwitch(switch2, bulb2, bulb2_on, intensity2, 2, "http://192.168.4.1/lamp2/on", "http://192.168.4.1/lamp2/off");
+        eventSwitch(switch2, bulb2, bulb2_on, intensity2, 2, "http://192.168.4.1/lamp2/on?value=" + intensityValue, "http://192.168.4.1/lamp2/off");
         // Event when click switch 3
-        eventSwitch(switch3, bulb3, bulb3_on, intensity3, 3, "http://192.168.4.1/lamp3/on", "http://192.168.4.1/lamp3/off");
+        eventSwitch(switch3, bulb3, bulb3_on, intensity3, 3, "http://192.168.4.1/lamp3/on?value=" + intensityValue, "http://192.168.4.1/lamp3/off");
 
-        // Event when slide the seek bar
-        eventSeekBar(intensity1);
+        // Event when slide the seekbar
+        eventSeekBar(intensity1, 1);
+        eventSeekBar(intensity2, 2);
+        eventSeekBar(intensity3, 3);
 
         // Event when click back icon button
         back.setOnClickListener(new View.OnClickListener() {
@@ -83,35 +88,6 @@ public class LampController extends AppCompatActivity {
                 finish();
             }
         });
-    }
-
-    // Function to Set Initial State of Switch Button
-    private void getInitialStates(Switch switchButton, ImageView bulbOff, ImageView bulbOn, SeekBar intensity, int lampId, String onEndPoint, String offEndPoint) {
-        // Use try-finally to ensure db is close no matter what happen
-        try {
-            String query = "SELECT * FROM lamp WHERE id = ?";
-            sqlDB = myDB.getReadableDatabase();
-            Cursor cursor = sqlDB.rawQuery(query, new String[]{String.valueOf(lampId)});
-            if (cursor.moveToFirst()) {
-                int status = cursor.getInt(cursor.getColumnIndexOrThrow("status"));
-                if (status == 0) {
-                    switchButton.setChecked(false);
-                    bulbOff.setVisibility(View.VISIBLE);
-                    bulbOn.setVisibility(View.GONE);
-                    intensity.setVisibility(View.GONE);
-                    esp32.getLampStates(onEndPoint);
-                } else {
-                    switchButton.setChecked(true);
-                    bulbOff.setVisibility(View.GONE);
-                    bulbOn.setVisibility(View.VISIBLE);
-                    intensity.setVisibility(View.VISIBLE);
-                    esp32.getLampStates(offEndPoint);
-                }
-            }
-            cursor.close();
-        } finally {
-            sqlDB.close();
-        }
     }
 
     // Function for Switch Click Event
@@ -138,10 +114,32 @@ public class LampController extends AppCompatActivity {
         });
     }
 
-    private void eventSeekBar(SeekBar seekBar) {
+    private void eventSeekBar(SeekBar seekBar, int lampId) {
         seekBar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
             @Override
             public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
+                seekBar.setProgress(intensityValue);
+                intensityValue = progress;
+                try {
+                    String query = "SELECT intensity FROM lamp WHERE id = ?";
+                    sqlDB = myDB.getWritableDatabase();
+                    Cursor cursor = sqlDB.rawQuery(query, new String[]{String.valueOf(lampId)});
+                    if (cursor.moveToFirst()) {
+                        progress = cursor.getInt(cursor.getColumnIndexOrThrow("intensity"));
+                    }
+                    cursor.close();
+                } finally {
+                    //sqlDB.close();
+                }
+                // Use try-finally to ensure db is close no matter what happen
+                try {
+                    sqlDB = myDB.getWritableDatabase();
+                    ContentValues cv = new ContentValues();
+                    cv.put("intensity", intensityValue);
+                    sqlDB.update("lamp", cv, "id = ?", new String[]{String.valueOf(lampId)});
+                } finally {
+                    //sqlDB.close();
+                }
                 Log.d("Seek Bar Value: ", String.valueOf(seekBar.getProgress()));
             }
 
@@ -157,6 +155,33 @@ public class LampController extends AppCompatActivity {
         });
     }
 
+    // Function to Set Initial State of Switch Button
+    private void getInitialStates(Switch switchButton, ImageView bulbOff, ImageView bulbOn, SeekBar intensity, int lampId) {
+        // Use try-finally to ensure db is close no matter what happen
+        try {
+            String query = "SELECT * FROM lamp WHERE id = ?";
+            sqlDB = myDB.getReadableDatabase();
+            Cursor cursor = sqlDB.rawQuery(query, new String[]{String.valueOf(lampId)});
+            if (cursor.moveToFirst()) {
+                int status = cursor.getInt(cursor.getColumnIndexOrThrow("status"));
+                if (status == 0) {
+                    switchButton.setChecked(false);
+                    bulbOff.setVisibility(View.VISIBLE);
+                    bulbOn.setVisibility(View.GONE);
+                    intensity.setVisibility(View.GONE);
+                } else {
+                    switchButton.setChecked(true);
+                    bulbOff.setVisibility(View.GONE);
+                    bulbOn.setVisibility(View.VISIBLE);
+                    intensity.setVisibility(View.VISIBLE);
+                }
+            }
+            cursor.close();
+        } finally {
+            //sqlDB.close();
+        }
+    }
+
     // Function to update initial state of each lamp
     private void updateLampState(int lampId, int newStatus) {
         // Use try-finally to ensure db is close no matter what happen
@@ -167,7 +192,7 @@ public class LampController extends AppCompatActivity {
             cv.put("status", newStatus);
             sqlDB.update("lamp", cv, "id = ?", new String[]{String.valueOf(lampId)});
         } finally {
-            sqlDB.close();
+            //sqlDB.close();
         }
     }
 }

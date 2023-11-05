@@ -67,32 +67,6 @@ public class Esp32 {
         sendRequest(url, Request.Method.GET, success, error);
     }
 
-    // Function to get initial state of lamp
-    public void getLampStates(String url) {
-        // Request a string response  from the URL
-        Response.Listener<String> success = new Response.Listener<String>() {
-            @Override
-            public void onResponse(String response) {
-                Log.d("Response: ", response);
-                //Toast.makeText(context, "Response: " + response, Toast.LENGTH_SHORT).show();
-            }
-        };
-
-        Response.ErrorListener error = new Response.ErrorListener() {
-            @Override
-            public void onErrorResponse(VolleyError error) {
-                if (error instanceof NoConnectionError) {
-                    Log.e("No Connection Error: ", error.toString());
-                }
-                Log.d("Response: ", String.valueOf(error));
-                Toast.makeText(context, "Response: " + error.toString(), Toast.LENGTH_SHORT).show();
-            }
-        };
-
-        // Add the request to the RequestQueue
-        sendRequest(url, Request.Method.GET, success, error);
-    }
-
     // Function to turn on/off lamp
     public void applyLamp(String url) {
         // Request a string response from the URL
