@@ -76,9 +76,11 @@ public class LampController extends AppCompatActivity {
         // Event when click switch 3
         eventSwitch(switch3, bulb3, bulb3_on, intensity3, 3, "http://192.168.4.1/lamp3/on?value=" + intensityValue, "http://192.168.4.1/lamp3/off");
 
-        // Event when slide the seekbar
+        // Event when slide the seekbar 1
         eventSeekBar(intensity1, 1);
+        // Event when slide the seekbar 2
         eventSeekBar(intensity2, 2);
+        // Event when slide the seekbar 3
         eventSeekBar(intensity3, 3);
 
         // Event when click back icon button
@@ -118,19 +120,7 @@ public class LampController extends AppCompatActivity {
         seekBar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
             @Override
             public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
-                seekBar.setProgress(intensityValue);
                 intensityValue = progress;
-                try {
-                    String query = "SELECT intensity FROM lamp WHERE id = ?";
-                    sqlDB = myDB.getWritableDatabase();
-                    Cursor cursor = sqlDB.rawQuery(query, new String[]{String.valueOf(lampId)});
-                    if (cursor.moveToFirst()) {
-                        progress = cursor.getInt(cursor.getColumnIndexOrThrow("intensity"));
-                    }
-                    cursor.close();
-                } finally {
-                    //sqlDB.close();
-                }
                 // Use try-finally to ensure db is close no matter what happen
                 try {
                     sqlDB = myDB.getWritableDatabase();
@@ -164,16 +154,19 @@ public class LampController extends AppCompatActivity {
             Cursor cursor = sqlDB.rawQuery(query, new String[]{String.valueOf(lampId)});
             if (cursor.moveToFirst()) {
                 int status = cursor.getInt(cursor.getColumnIndexOrThrow("status"));
+                int intensitySavedValue = cursor.getInt(cursor.getColumnIndexOrThrow("intensity"));
                 if (status == 0) {
                     switchButton.setChecked(false);
                     bulbOff.setVisibility(View.VISIBLE);
                     bulbOn.setVisibility(View.GONE);
                     intensity.setVisibility(View.GONE);
+                    intensity.setProgress(intensitySavedValue);
                 } else {
                     switchButton.setChecked(true);
                     bulbOff.setVisibility(View.GONE);
                     bulbOn.setVisibility(View.VISIBLE);
                     intensity.setVisibility(View.VISIBLE);
+                    intensity.setProgress(intensitySavedValue);
                 }
             }
             cursor.close();
