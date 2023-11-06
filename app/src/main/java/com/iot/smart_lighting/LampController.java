@@ -77,11 +77,11 @@ public class LampController extends AppCompatActivity {
         eventSwitch(switch3, bulb3, bulb3_on, intensity3, 3, "http://192.168.4.1/lamp3/on?value=" + intensityValue, "http://192.168.4.1/lamp3/off");
 
         // Event when slide the seekbar 1
-        eventSeekBar(intensity1, 1);
+        eventSeekBar(intensity1, 1, "http://192.168.4.1/lamp1/on?value=");
         // Event when slide the seekbar 2
-        eventSeekBar(intensity2, 2);
+        eventSeekBar(intensity2, 2, "http://192.168.4.1/lamp2/on?value=");
         // Event when slide the seekbar 3
-        eventSeekBar(intensity3, 3);
+        eventSeekBar(intensity3, 3, "http://192.168.4.1/lamp3/on?value=");
 
         // Event when click back icon button
         back.setOnClickListener(new View.OnClickListener() {
@@ -116,7 +116,7 @@ public class LampController extends AppCompatActivity {
         });
     }
 
-    private void eventSeekBar(SeekBar seekBar, int lampId) {
+    private void eventSeekBar(SeekBar seekBar, int lampId, String url) {
         seekBar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
             @Override
             public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
@@ -131,6 +131,9 @@ public class LampController extends AppCompatActivity {
                     //sqlDB.close();
                 }
                 Log.d("Seek Bar Value: ", String.valueOf(seekBar.getProgress()));
+
+                String dynamicUrl = url + intensityValue;
+                esp32.applyLamp(dynamicUrl);
             }
 
             @Override
