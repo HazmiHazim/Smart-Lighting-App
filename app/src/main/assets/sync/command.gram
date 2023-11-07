@@ -1,0 +1,10 @@
+#JSGF V1.0;
+
+grammar commands;
+
+public <command> = turn on lamp one |
+                   turn on lamp two |
+                   turn on lamp three |
+                   turn off lamp one |
+                   turn off lamp two |
+                   turn off lamp three;
