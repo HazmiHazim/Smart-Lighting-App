@@ -26,7 +26,7 @@ public class LampController extends AppCompatActivity {
     SmartLampDB myDB;
     SQLiteDatabase sqlDB;
 
-    // Declare ESP32 Class
+    // Declare ESP32 class
     Esp32 esp32;
 
     @Override
@@ -93,7 +93,7 @@ public class LampController extends AppCompatActivity {
     }
 
     // Function for Switch Click Event
-    private void eventSwitch(Switch switchButton, ImageView bulbOff, ImageView bulbOn, SeekBar intensity, int lampId, String onEndpoint, String offEndpoint) {
+    public void eventSwitch(Switch switchButton, ImageView bulbOff, ImageView bulbOn, SeekBar intensity, int lampId, String onEndpoint, String offEndpoint) {
         switchButton.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             @Override
             public void onCheckedChanged(CompoundButton button, boolean isChecked) {

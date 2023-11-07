@@ -28,8 +28,11 @@ public class Main extends AppCompatActivity {
     SmartLampDB myDB;
     SQLiteDatabase sqlDB;
 
-    // Declare ESP32 Class
+    // Declare ESP32 class
     Esp32 esp32;
+
+    // Declare VoiceRecognition class
+    VoiceRecognition voiceRec;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -47,11 +50,17 @@ public class Main extends AppCompatActivity {
         // Instantiate ESP32 class
         esp32 = new Esp32(Main.this);
 
+        // Instantiate VoiceRecognition class
+        voiceRec = new VoiceRecognition(Main.this);
+
         // Call ping function to connect with ESP32
         esp32.pingESP32();
 
         // Ask for permission to access location
         requestPermissions(new String[]{Manifest.permission.ACCESS_FINE_LOCATION}, 200);
+
+        // Ask for permission to access microphone
+        requestPermissions(new String[]{Manifest.permission.RECORD_AUDIO}, 201);
 
         settingMenu.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -117,6 +126,14 @@ public class Main extends AppCompatActivity {
                 createOrRetrieve();
             } else {
                 Toast.makeText(Main.this, "Permission to access location is required for data-saving purposes.", Toast.LENGTH_SHORT).show();
+            }
+        }
+
+        if (requestCode == 201) {
+            if (granResults.length > 0  && granResults[0] == PackageManager.PERMISSION_GRANTED) {
+                // Wew
+            } else {
+                Toast.makeText(Main.this, "Permission to access microphone is required for voice-controlled.", Toast.LENGTH_SHORT).show();
             }
         }
     }
