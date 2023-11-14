@@ -50,9 +50,6 @@ public class Main extends AppCompatActivity {
         // Instantiate ESP32 class
         esp32 = new Esp32(Main.this);
 
-        // Instantiate VoiceRecognition class
-        voiceRec = new VoiceRecognition(Main.this);
-
         // Call ping function to connect with ESP32
         esp32.pingESP32();
 
@@ -121,6 +118,8 @@ public class Main extends AppCompatActivity {
             if (granResults.length > 0 && granResults[0] == PackageManager.PERMISSION_GRANTED) {
                 // Call SQLite function to create data if not exists, if exists then do nothing
                 createOrRetrieve();
+                // Instantiate VoiceRecognition class
+                voiceRec = new VoiceRecognition(Main.this);
             } else {
                 Toast.makeText(Main.this, "Permission to access location is required for data-saving purposes.", Toast.LENGTH_SHORT).show();
                 Toast.makeText(Main.this, "Permission to access microphone is required for voice-controlled.", Toast.LENGTH_SHORT).show();

@@ -90,6 +90,7 @@ public class Timer extends AppCompatActivity {
         // Add all selectors to the array
         selectorArr = new View[] {selector1, selector2, selector3};
 
+        // Set default navigation lamp page to lamp 1 when opening the page
         selectNavigationLamp(0);
 
         // Click event on which lamp is used
@@ -151,9 +152,10 @@ public class Timer extends AppCompatActivity {
                                 timeChoose = checkDigit(hours) + " : " + checkDigit(minutes);
                                 noTimerData.setVisibility(View.GONE);
                                 time.add(timeChoose);
-                                adapter.notifyDataSetChanged();
                                 // Save to SQL database
                                 createTimer(timeChoose, 1, selectedIndex + 1);
+                                adapter.setSelectedIndex(selectedIndex);
+                                adapter.notifyDataSetChanged();
                                 Toast.makeText(Timer.this, "Set Time: " + timeChoose, Toast.LENGTH_SHORT).show();
                             }
                         }, currentHour, currentMinutes, true);
@@ -221,7 +223,7 @@ public class Timer extends AppCompatActivity {
             cursor.close();
         }
         finally {
-            //sqlDB.close();
+            sqlDB.close();
         }
     }
 
@@ -250,7 +252,7 @@ public class Timer extends AppCompatActivity {
             Log.d("Delete: ", "Successful");
         }
         finally {
-            //sqlDB.close();
+            sqlDB.close();
         }
     }
 }
