@@ -178,6 +178,7 @@ public class LampController extends AppCompatActivity {
         }
     }
 
+    // Function to get intensity value from DB
     private int getIntensityValue(int lampId) {
         try {
             String query = "SELECT * FROM lamp WHERE id = ?";

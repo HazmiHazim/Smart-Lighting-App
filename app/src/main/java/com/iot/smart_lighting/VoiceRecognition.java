@@ -19,9 +19,8 @@ public class VoiceRecognition implements RecognitionListener {
     private SpeechRecognizer recognizer;
     private Esp32 esp32;
     private static final String KWS_SEARCH = "wakeup";
-    private static final String KEYPHRASE = "hey babe";
-
-    private static final String GRAMMAR_SEARCH = "commands";
+    private static final String COMMAND_SEARCH = "command";
+    private static final String KEYPHRASE = "computer";
 
     public VoiceRecognition (Context context) {
         this.context = context;
@@ -34,17 +33,17 @@ public class VoiceRecognition implements RecognitionListener {
             Assets assets = new Assets(context);
             File assetsDir = assets.syncAssets();
 
-            recognizer = SpeechRecognizerSetup
-                    .defaultSetup()
+            recognizer = SpeechRecognizerSetup.defaultSetup()
                     .setAcousticModel(new File(assetsDir, "en-us-ptm"))
                     .setDictionary(new File(assetsDir, "cmudict-en-us.dict"))
-                    .setKeywordThreshold(1e-40f)
+                    .setKeywordThreshold(1e-45f) // Threshold to tune for keyphrase to balance between false positives and false negatives
                     .getRecognizer();
 
             recognizer.addListener(this);
-            // Create keyword-activation search.
-            recognizer.addKeyphraseSearch(KWS_SEARCH, KEYPHRASE);
-            recognizer.startListening(KWS_SEARCH);
+
+            // Create grammar-based search for commands
+            File commandGrammar = new File(assetsDir, "command.gram");
+            recognizer.addKeywordSearch(COMMAND_SEARCH, commandGrammar);
         } catch (IOException exception){
             exception.printStackTrace();
             Toast.makeText(context, "Failed to set up voice recognition.", Toast.LENGTH_SHORT).show();
@@ -56,35 +55,34 @@ public class VoiceRecognition implements RecognitionListener {
         // Do Something
     }
 
+    // Stop recognizer to get the final result
     @Override
     public void onEndOfSpeech() {
-        // Do Something
+        reset(KWS_SEARCH);
     }
 
     @Override
     public void onPartialResult(Hypothesis hypothesis) {
-        if (hypothesis == null) {
-            return;
-        }
-        String text = hypothesis.getHypstr();
-        Log.d("SpeechRecognition", "Recognized: " + text);
-
-        if (text.equals("hey babe")) {
-            esp32.applyLamp("http://192.168.4.1/lamp1/on?value=255");
-            recognizer.cancel();
-        } else if (text.equals("turn on lamp two")) {
-            esp32.applyLamp("http://192.168.4.1/lamp1/off");
-            recognizer.cancel();
-        }
-        recognizer.cancel();
-        recognizer.startListening(KWS_SEARCH);
+        // Do Something
     }
 
     @Override
     public void onResult(Hypothesis hypothesis) {
         if (hypothesis != null) {
             String text = hypothesis.getHypstr();
-            Log.i("Voice Result", "onResult Test: " + text);
+            Log.d("Result", "Result: " + text);
+            if (text.contains("turn on lamp one")) {
+                esp32.applyLamp("http://192.168.4.1/lamp1/on?value=255");
+                Log.d("Lamp 1: ", "Success");
+            }
+            if (text.contains("turn on lamp two")) {
+                esp32.applyLamp("http://192.168.4.1/lamp2/on?value=255");
+                Log.d("Lamp 2: ", "Success");
+            }
+            if (text.contains("turn on lamp three")) {
+                esp32.applyLamp("http://192.168.4.1/lamp3/on?value=255");
+                Log.d("Lamp 3: ", "Success");
+            }
         }
     }
 
@@ -96,5 +94,10 @@ public class VoiceRecognition implements RecognitionListener {
     @Override
     public void onTimeout() {
         // Do Something
+    }
+
+    private void reset(String searchName) {
+        recognizer.stop();
+        recognizer.startListening(searchName);
     }
 }

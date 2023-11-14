@@ -45,7 +45,7 @@ public class Timer extends AppCompatActivity {
     private String timeChoose;
 
     // Variable to store the selected index. Initialize as "-1" means no selected index yet
-    int selectedIndex = 0;
+    private int selectedIndex = 0;
 
     // Initialize Arraylist Globally
     ArrayList<String> time = new ArrayList<String>();
@@ -90,6 +90,8 @@ public class Timer extends AppCompatActivity {
         // Add all selectors to the array
         selectorArr = new View[] {selector1, selector2, selector3};
 
+        selectNavigationLamp(0);
+
         // Click event on which lamp is used
         for (int i = 0; i < timerLampArr.length; i++) {
             final int index = i;
@@ -101,9 +103,6 @@ public class Timer extends AppCompatActivity {
             });
         }
 
-        // Calling function getTime() to get the time stored in DB
-        getTime(1);
-
         // Make data deleted by swiping left or right
         new ItemTouchHelper(new ItemTouchHelper.SimpleCallback(0, ItemTouchHelper.LEFT | ItemTouchHelper.RIGHT) {
             @Override
@@ -113,7 +112,17 @@ public class Timer extends AppCompatActivity {
 
             @Override
             public void onSwiped(RecyclerView.ViewHolder viewHolder, int direction) {
-                Toast.makeText(Timer.this, "Deleted Successfully", Toast.LENGTH_SHORT).show();
+                int position = viewHolder.getAdapterPosition();
+                if (position != RecyclerView.NO_POSITION) {
+                    String timer = time.get(position);
+                    deleteTimer(selectedIndex + 1, timer);
+                    time.remove(timer);
+                    adapter.notifyDataSetChanged();
+                    //Toast.makeText(Timer.this, "Deleted Successfully", Toast.LENGTH_SHORT).show();
+                }
+                if (time.isEmpty()) {
+                    noTimerData.setVisibility(View.VISIBLE);
+                }
             }
         }).attachToRecyclerView(recyclerView);
 
@@ -140,11 +149,11 @@ public class Timer extends AppCompatActivity {
                             @Override
                             public void onTimeSet(TimePicker timePicker, int hours, int minutes) {
                                 timeChoose = checkDigit(hours) + " : " + checkDigit(minutes);
-                                // Save to SQL database
-                                createTime(timeChoose, 1, 1);
                                 noTimerData.setVisibility(View.GONE);
                                 time.add(timeChoose);
                                 adapter.notifyDataSetChanged();
+                                // Save to SQL database
+                                createTimer(timeChoose, 1, selectedIndex + 1);
                                 Toast.makeText(Timer.this, "Set Time: " + timeChoose, Toast.LENGTH_SHORT).show();
                             }
                         }, currentHour, currentMinutes, true);
@@ -162,7 +171,6 @@ public class Timer extends AppCompatActivity {
                         dialogTimer.dismiss();
                     }
                 });
-
                 timePickerSpinner.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
                 timePickerSpinner.setTitle("Set Timer");
                 timePickerSpinner.setCancelable(true);
@@ -186,10 +194,39 @@ public class Timer extends AppCompatActivity {
             // Perform any other actions or updates based on the selected index
             // For example, update the content displayed on the screen
         }
+        // Calling function getTime() to get the time stored in DB
+        getTimer(selectedIndex + 1);
+        Log.d("Index", "Index: " + selectedIndex);
+    }
+
+    // Get all timer data stored in SQLite
+    private void getTimer(int lampId) {
+        // Use try-finally to ensure db is close no matter what happen
+        try {
+            String query = "SELECT * FROM lampTimer WHERE lamp_id = ?";
+            sqlDB = myDB.getReadableDatabase();
+            Cursor cursor = sqlDB.rawQuery(query, new String[] {String.valueOf(lampId)});
+            // Clear the existing timer list before adding new data
+            time.clear();
+            if (cursor.moveToFirst()) {
+                do {
+                    // Add each timer data to the list
+                    time.add(cursor.getString(cursor.getColumnIndexOrThrow("time")));
+                } while (cursor.moveToNext());
+                noTimerData.setVisibility(View.GONE);
+            }
+            else {
+                noTimerData.setVisibility(View.VISIBLE);
+            }
+            cursor.close();
+        }
+        finally {
+            //sqlDB.close();
+        }
     }
 
     // Create lamp timer data in SQLite
-    private void createTime(String timeChoose, int status, int lampId) {
+    private void createTimer(String timeChoose, int status, int lampId) {
         // Use try-finally to ensure db is close no matter what happen
         try {
             sqlDB = myDB.getWritableDatabase();
@@ -204,37 +241,16 @@ public class Timer extends AppCompatActivity {
         }
     }
 
-    // Get all timer data stored in SQLite
-    private void getTime(int lampId) {
-        // Use try-finally to ensure db is close no matter what happen
-        try {
-            String query = "SELECT * FROM lampTimer WHERE lamp_id = ?";
-            sqlDB = myDB.getReadableDatabase();
-            Cursor cursor = sqlDB.rawQuery(query, new String[] {String.valueOf(lampId)});
-            if (!cursor.moveToFirst()) {
-                noTimerData.setVisibility(View.VISIBLE);
-            }
-            else {
-                noTimerData.setVisibility(View.GONE);
-                time.add(cursor.getString(cursor.getColumnIndexOrThrow("time")));
-            }
-            cursor.close();
-        }
-        finally {
-            sqlDB.close();
-        }
-    }
-
-    //
-    private void delete(int id) {
+    // Function to delete the selected timer from DB
+    private void deleteTimer(int lampId, String timer) {
         // Use try-finally to ensure db is close no matter what happen
         try {
             sqlDB = myDB.getWritableDatabase();
-            sqlDB.delete("lampTimer", "id = ?", new String[] {String.valueOf(id)});
+            sqlDB.delete("lampTimer", "lamp_id = ? AND time = ?", new String[] {String.valueOf(lampId), timer});
             Log.d("Delete: ", "Successful");
         }
         finally {
-            sqlDB.close();
+            //sqlDB.close();
         }
     }
 }
