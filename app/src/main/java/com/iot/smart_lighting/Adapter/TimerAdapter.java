@@ -6,6 +6,8 @@ import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.graphics.Color;
 import android.os.AsyncTask;
+import android.os.Handler;
+import android.os.Looper;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -20,6 +22,8 @@ import com.iot.smart_lighting.Model.SmartLampDB;
 import com.iot.smart_lighting.R;
 
 import java.util.ArrayList;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
 public class TimerAdapter extends RecyclerView.Adapter<TimerAdapter.TimerHolder> {
 
@@ -52,29 +56,29 @@ public class TimerAdapter extends RecyclerView.Adapter<TimerAdapter.TimerHolder>
         String timer = String.valueOf(time.get(position));
         myDB = new SmartLampDB(context);
 
-        // Perform a background task using AsyncTask  without blocking the main UI
-        new AsyncTask<Void, Void, Integer>() {
-            @Override
-            protected Integer doInBackground(Void... Voids) {
-                // Use try-finally to ensure db is close no matter what happen
-                try {
-                    String query = "SELECT * FROM lampTimer WHERE lamp_id = ? AND time = ?";
-                    sqlDB = myDB.getReadableDatabase();
-                    Cursor cursor = sqlDB.rawQuery(query, new String[]{String.valueOf(lampId), timer});
-                    if (cursor.moveToFirst()) {
-                        return cursor.getInt(cursor.getColumnIndexOrThrow("status"));
-                    }
-                } finally {
-                    sqlDB.close();
-                }
-                // Default status if no data is found
-                return 0;
-            }
+        // Perform a background task using ExecutorService without blocking the main UI
+        ExecutorService executor = Executors.newSingleThreadExecutor();
+        Handler handler = new Handler(Looper.getMainLooper());
 
-            @Override
-            protected void onPostExecute(Integer status) {
-                holder.switchTimer.setChecked(status == 1);
-                if (status == 1) {
+        executor.execute(() -> {
+            // Perform a background task
+            int status = 0;
+            // Use try-finally to ensure db is close no matter what happen
+            try {
+                String query = "SELECT * FROM lampTimer WHERE lamp_id = ? AND time = ?";
+                sqlDB = myDB.getReadableDatabase();
+                Cursor cursor = sqlDB.rawQuery(query, new String[]{String.valueOf(lampId), timer});
+                if (cursor.moveToFirst()) {
+                    status = cursor.getInt(cursor.getColumnIndexOrThrow("status"));
+                }
+            } finally {
+                sqlDB.close();
+            }
+            int finalStatus = status;
+            handler.post(() -> {
+                // UI Thread Task
+                holder.switchTimer.setChecked(finalStatus == 1);
+                if (finalStatus == 1) {
                     holder.timeName.setTextColor(Color.parseColor("#6A0DAD"));
                 } else {
                     holder.timeName.setTextColor(Color.parseColor("#D9D9D9"));
@@ -84,29 +88,18 @@ public class TimerAdapter extends RecyclerView.Adapter<TimerAdapter.TimerHolder>
                     @Override
                     public void onCheckedChanged(CompoundButton switchButton, boolean isChecked) {
                         if (isChecked) {
-                            updateSwitchStateAsync(lampId, timer, 1);
+                            updateSwitchState(lampId, timer, 1);
                             holder.timeName.setTextColor(Color.parseColor("#6A0DAD"));
                             Log.d("ID", "Lamp ID: " + lampId);
                             Log.d("Timer", "Timer: " + timer);
                         } else {
-                            updateSwitchStateAsync(lampId, timer, 0);
+                            updateSwitchState(lampId, timer, 0);
                             holder.timeName.setTextColor(Color.parseColor("#D9D9D9"));
                         }
                     }
                 });
-            }
-
-            private void updateSwitchStateAsync(int lampId, String timer, int newStatus) {
-                // Perform the database update in an AsyncTask
-                new AsyncTask<Void, Void, Void>() {
-                    @Override
-                    protected Void doInBackground(Void... Voids) {
-                        updateSwitchState(lampId, timer, newStatus);
-                        return null;
-                    }
-                }.execute();
-            }
-        }.execute();
+            });
+        });
     }
 
     @Override
