@@ -6,6 +6,7 @@ import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.graphics.Color;
 import android.os.AsyncTask;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -48,7 +49,7 @@ public class TimerAdapter extends RecyclerView.Adapter<TimerAdapter.TimerHolder>
     public void onBindViewHolder(TimerHolder holder, int position) {
         holder.timeName.setText(String.valueOf(time.get(position)));
         int lampId = selectedIndex + 1;
-        String timer = String.valueOf(time.get(holder.getAdapterPosition()));
+        String timer = String.valueOf(time.get(position));
         myDB = new SmartLampDB(context);
 
         // Perform a background task using AsyncTask  without blocking the main UI
@@ -85,6 +86,8 @@ public class TimerAdapter extends RecyclerView.Adapter<TimerAdapter.TimerHolder>
                         if (isChecked) {
                             updateSwitchStateAsync(lampId, timer, 1);
                             holder.timeName.setTextColor(Color.parseColor("#6A0DAD"));
+                            Log.d("ID", "Lamp ID: " + lampId);
+                            Log.d("Timer", "Timer: " + timer);
                         } else {
                             updateSwitchStateAsync(lampId, timer, 0);
                             holder.timeName.setTextColor(Color.parseColor("#D9D9D9"));

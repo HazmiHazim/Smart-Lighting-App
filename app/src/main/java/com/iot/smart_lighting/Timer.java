@@ -99,6 +99,7 @@ public class Timer extends AppCompatActivity {
                 @Override
                 public void onClick(View view) {
                     selectNavigationLamp(index);
+                    adapter.setSelectedIndex(index);
                 }
             });
         }
@@ -154,7 +155,6 @@ public class Timer extends AppCompatActivity {
                                 // Save to SQL database
                                 createTimer(timeChoose, 1, selectedIndex + 1);
                                 adapter.setSelectedIndex(selectedIndex);
-                                adapter.notifyDataSetChanged();
                                 Toast.makeText(Timer.this, "Set Time: " + timeChoose, Toast.LENGTH_SHORT).show();
                             }
                         }, currentHour, currentMinutes, true);
@@ -219,6 +219,7 @@ public class Timer extends AppCompatActivity {
             else {
                 noTimerData.setVisibility(View.VISIBLE);
             }
+            adapter.notifyDataSetChanged();
             cursor.close();
         }
         finally {
