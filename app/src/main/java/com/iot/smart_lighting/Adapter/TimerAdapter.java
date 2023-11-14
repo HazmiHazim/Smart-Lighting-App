@@ -4,6 +4,7 @@ import android.content.ContentValues;
 import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
+import android.graphics.Color;
 import android.os.AsyncTask;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -72,13 +73,21 @@ public class TimerAdapter extends RecyclerView.Adapter<TimerAdapter.TimerHolder>
             @Override
             protected void onPostExecute(Integer status) {
                 holder.switchTimer.setChecked(status == 1);
+                if (status == 1) {
+                    holder.timeName.setTextColor(Color.parseColor("#6A0DAD"));
+                } else {
+                    holder.timeName.setTextColor(Color.parseColor("#D9D9D9"));
+                }
+
                 holder.switchTimer.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
                     @Override
                     public void onCheckedChanged(CompoundButton switchButton, boolean isChecked) {
                         if (isChecked) {
                             updateSwitchStateAsync(lampId, timer, 1);
+                            holder.timeName.setTextColor(Color.parseColor("#6A0DAD"));
                         } else {
                             updateSwitchStateAsync(lampId, timer, 0);
+                            holder.timeName.setTextColor(Color.parseColor("#D9D9D9"));
                         }
                     }
                 });

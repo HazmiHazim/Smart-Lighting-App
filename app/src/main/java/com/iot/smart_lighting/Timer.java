@@ -3,7 +3,6 @@ package com.iot.smart_lighting;
 import android.app.TimePickerDialog;
 import android.content.ContentValues;
 import android.content.DialogInterface;
-import android.content.Intent;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.graphics.Color;
@@ -119,7 +118,7 @@ public class Timer extends AppCompatActivity {
                     deleteTimer(selectedIndex + 1, timer);
                     time.remove(timer);
                     adapter.notifyDataSetChanged();
-                    //Toast.makeText(Timer.this, "Deleted Successfully", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(Timer.this, "Deleted Successfully", Toast.LENGTH_SHORT).show();
                 }
                 if (time.isEmpty()) {
                     noTimerData.setVisibility(View.VISIBLE);
