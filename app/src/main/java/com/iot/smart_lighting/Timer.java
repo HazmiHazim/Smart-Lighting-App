@@ -154,6 +154,7 @@ public class Timer extends AppCompatActivity {
                                 // Save to SQL database
                                 createTimer(timeChoose, 1, selectedIndex + 1);
                                 adapter.setSelectedIndex(selectedIndex);
+                                adapter.setTimeChoose(timeChoose);
                                 Toast.makeText(Timer.this, "Set Time: " + timeChoose, Toast.LENGTH_SHORT).show();
                             }
                         }, currentHour, currentMinutes, true);
