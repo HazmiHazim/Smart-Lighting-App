@@ -188,6 +188,7 @@ public class LampController extends AppCompatActivity {
                 int intensityValue = cursor.getInt(cursor.getColumnIndexOrThrow("intensity"));
                 return intensityValue;
             }
+            cursor.close();
         } finally {
             sqlDB.close();
         }

@@ -5,10 +5,8 @@ import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.graphics.Color;
-import android.os.AsyncTask;
 import android.os.Handler;
 import android.os.Looper;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -64,6 +62,8 @@ public class TimerAdapter extends RecyclerView.Adapter<TimerAdapter.TimerHolder>
             // Perform a background task
             int status = 0;
             // Use try-finally to ensure db is close no matter what happen
+            // Don't close the DB in multithreading task because it can lead to error "Connection pool has been closed"
+            // If using single-threading then it is fine to close the DB
             try {
                 String query = "SELECT * FROM lampTimer WHERE lamp_id = ? AND time = ?";
                 sqlDB = myDB.getReadableDatabase();
@@ -71,8 +71,9 @@ public class TimerAdapter extends RecyclerView.Adapter<TimerAdapter.TimerHolder>
                 if (cursor.moveToFirst()) {
                     status = cursor.getInt(cursor.getColumnIndexOrThrow("status"));
                 }
+                cursor.close();
             } finally {
-                sqlDB.close();
+                //sqlDB.close();
             }
             int finalStatus = status;
             handler.post(() -> {
@@ -83,21 +84,18 @@ public class TimerAdapter extends RecyclerView.Adapter<TimerAdapter.TimerHolder>
                 } else {
                     holder.timeName.setTextColor(Color.parseColor("#D9D9D9"));
                 }
-
-                holder.switchTimer.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
-                    @Override
-                    public void onCheckedChanged(CompoundButton switchButton, boolean isChecked) {
-                        if (isChecked) {
-                            updateSwitchState(lampId, timer, 1);
-                            holder.timeName.setTextColor(Color.parseColor("#6A0DAD"));
-                            Log.d("ID", "Lamp ID: " + lampId);
-                            Log.d("Timer", "Timer: " + timer);
-                        } else {
-                            updateSwitchState(lampId, timer, 0);
-                            holder.timeName.setTextColor(Color.parseColor("#D9D9D9"));
-                        }
+            });
+            holder.switchTimer.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+                @Override
+                public void onCheckedChanged(CompoundButton switchButton, boolean isChecked) {
+                    if (isChecked) {
+                        updateSwitchState(lampId, timer, 1);
+                        holder.timeName.setTextColor(Color.parseColor("#6A0DAD"));
+                    } else {
+                        updateSwitchState(lampId, timer, 0);
+                        holder.timeName.setTextColor(Color.parseColor("#D9D9D9"));
                     }
-                });
+                }
             });
         });
     }
@@ -120,15 +118,18 @@ public class TimerAdapter extends RecyclerView.Adapter<TimerAdapter.TimerHolder>
         }
     }
 
+    // Function to update switch status for each lamp_id and for specific time in database
     private void updateSwitchState(int lampId, String timer, int newStatus) {
         // Use try-finally to ensure db is close no matter what happen
+        // Don't close the DB in multithreading task because it can lead to error "Connection pool has been closed"
+        // If using single-threading then it is fine to close the DB
         try {
             sqlDB = myDB.getWritableDatabase();
             ContentValues cv = new ContentValues();
             cv.put("status", newStatus);
             sqlDB.update("lampTimer", cv, "lamp_id = ? AND time = ?", new String[]{String.valueOf(lampId), timer});
         } finally {
-            sqlDB.close();
+            //sqlDB.close();
         }
     }
 }

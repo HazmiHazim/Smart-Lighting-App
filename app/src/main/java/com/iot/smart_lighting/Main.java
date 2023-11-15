@@ -136,6 +136,7 @@ public class Main extends AppCompatActivity {
             Cursor cursor = sqlDB.rawQuery(query, null);
             if (cursor != null && cursor.moveToFirst()) {
                 //Toast.makeText(Main.this, "Locally Data is Received.", Toast.LENGTH_SHORT).show();
+                cursor.close();
             } else {
                 String esp32Ssid = esp32.getESP32Ssid();
                 Log.d("SSID", "Retrieved SSID: " + esp32Ssid);

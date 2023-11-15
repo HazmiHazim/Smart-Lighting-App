@@ -8,7 +8,6 @@ import android.database.sqlite.SQLiteDatabase;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
@@ -197,7 +196,6 @@ public class Timer extends AppCompatActivity {
         }
         // Calling function getTime() to get the time stored in DB
         getTimer(selectedIndex + 1);
-        Log.d("Index", "Index: " + selectedIndex);
     }
 
     // Get all timer data stored in SQLite
@@ -249,7 +247,6 @@ public class Timer extends AppCompatActivity {
         try {
             sqlDB = myDB.getWritableDatabase();
             sqlDB.delete("lampTimer", "lamp_id = ? AND time = ?", new String[] {String.valueOf(lampId), timer});
-            Log.d("Delete: ", "Successful");
         }
         finally {
             sqlDB.close();
