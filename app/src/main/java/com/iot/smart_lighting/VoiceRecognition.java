@@ -1,8 +1,12 @@
 package com.iot.smart_lighting;
 
+import android.content.ContentValues;
 import android.content.Context;
+import android.database.sqlite.SQLiteDatabase;
 import android.util.Log;
 import android.widget.Toast;
+
+import com.iot.smart_lighting.Model.SmartLampDB;
 
 import java.io.File;
 import java.io.IOException;
@@ -18,7 +22,7 @@ public class VoiceRecognition implements RecognitionListener {
     private Context context;
     private SpeechRecognizer recognizer;
     private Esp32 esp32;
-    /* Named searches allow to quickly reconfigure the decoder */
+    // Named searches allow to quickly reconfigure the decoder
     private static final String KWS_SEARCH = "wakeup";
     private static final String FORECAST_SEARCH = "forecast";
     private static final String DIGITS_SEARCH = "digits";
@@ -26,13 +30,18 @@ public class VoiceRecognition implements RecognitionListener {
     private static final String MENU_SEARCH = "menu";
     private static final String COMMAND_SEARCH = "commands";
 
-    /* Keyword we are looking for to activate menu */
+    // Keyword we are looking for to activate menu
     private static final String KEYPHRASE = "hey phoenix";
+
+    // Initialize Database
+    SmartLampDB myDB;
+    SQLiteDatabase sqlDB;
 
     public VoiceRecognition (Context context) {
         this.context = context;
         this.esp32 = new Esp32(context);
         setupRecognizer();
+        this.myDB = new SmartLampDB(context);
     }
 
     private void setupRecognizer() {
@@ -151,30 +160,37 @@ public class VoiceRecognition implements RecognitionListener {
         }
     }
 
+    // Function for voice recognition to do what user command
     private void executeCommand(String textResult) {
         switch (textResult) {
             case "turn on lamp one":
                 esp32.applyLamp("http://192.168.4.1/lamp1/on?value=255");
+                updateLampState(1, 1);
                 Log.d("Command", "Command: Success Turn On Lamp 1");
                 break;
             case "turn off lamp one":
                 esp32.applyLamp("http://192.168.4.1/lamp1/off");
+                updateLampState(1, 0);
                 Log.d("Command", "Command: Success Turn Off Lamp 1");
                 break;
             case "turn on lamp two":
                 esp32.applyLamp("http://192.168.4.1/lamp2/on?value=255");
+                updateLampState(2, 1);
                 Log.d("Command", "Command: Success Turn On Lamp 2");
                 break;
             case "turn off lamp two":
                 esp32.applyLamp("http://192.168.4.1/lamp2/off");
+                updateLampState(2, 0);
                 Log.d("Command", "Command: Success Turn Off Lamp 2");
                 break;
             case "turn on lamp three":
                 esp32.applyLamp("http://192.168.4.1/lamp3/on?value=255");
+                updateLampState(3, 1);
                 Log.d("Command", "Command: Success Turn On Lamp 3");
                 break;
             case "turn off lamp three":
                 esp32.applyLamp("http://192.168.4.1/lamp3/off");
+                updateLampState(3, 0);
                 Log.d("Command", "Command: Success Turn Off Lamp 3");
                 break;
             default:
@@ -183,4 +199,17 @@ public class VoiceRecognition implements RecognitionListener {
         }
     }
 
+    // Function to update initial state of each lamp
+    private void updateLampState(int lampId, int newStatus) {
+        // Use try-finally to ensure db is close no matter what happen
+        try {
+            // Open The Database for Reading
+            sqlDB = myDB.getWritableDatabase();
+            ContentValues cv = new ContentValues();
+            cv.put("status", newStatus);
+            sqlDB.update("lamp", cv, "id = ?", new String[]{String.valueOf(lampId)});
+        } finally {
+            //sqlDB.close();
+        }
+    }
 }
