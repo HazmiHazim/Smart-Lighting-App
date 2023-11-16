@@ -165,32 +165,32 @@ public class VoiceRecognition implements RecognitionListener {
         switch (textResult) {
             case "turn on lamp one":
                 esp32.applyLamp("http://192.168.4.1/lamp1/on?value=255");
-                updateLampState(1, 1);
+                updateLamp(1, 1, 255);
                 Log.d("Command", "Command: Success Turn On Lamp 1");
                 break;
             case "turn off lamp one":
                 esp32.applyLamp("http://192.168.4.1/lamp1/off");
-                updateLampState(1, 0);
+                updateLamp(1, 0, 0);
                 Log.d("Command", "Command: Success Turn Off Lamp 1");
                 break;
             case "turn on lamp two":
                 esp32.applyLamp("http://192.168.4.1/lamp2/on?value=255");
-                updateLampState(2, 1);
+                updateLamp(2, 1, 255);
                 Log.d("Command", "Command: Success Turn On Lamp 2");
                 break;
             case "turn off lamp two":
                 esp32.applyLamp("http://192.168.4.1/lamp2/off");
-                updateLampState(2, 0);
+                updateLamp(2, 0, 0);
                 Log.d("Command", "Command: Success Turn Off Lamp 2");
                 break;
             case "turn on lamp three":
                 esp32.applyLamp("http://192.168.4.1/lamp3/on?value=255");
-                updateLampState(3, 1);
+                updateLamp(3, 1, 255);
                 Log.d("Command", "Command: Success Turn On Lamp 3");
                 break;
             case "turn off lamp three":
                 esp32.applyLamp("http://192.168.4.1/lamp3/off");
-                updateLampState(3, 0);
+                updateLamp(3, 0, 0);
                 Log.d("Command", "Command: Success Turn Off Lamp 3");
                 break;
             default:
@@ -200,16 +200,17 @@ public class VoiceRecognition implements RecognitionListener {
     }
 
     // Function to update initial state of each lamp
-    private void updateLampState(int lampId, int newStatus) {
+    private void updateLamp(int lampId, int newStatus, int intensity) {
         // Use try-finally to ensure db is close no matter what happen
         try {
             // Open The Database for Reading
             sqlDB = myDB.getWritableDatabase();
             ContentValues cv = new ContentValues();
             cv.put("status", newStatus);
+            cv.put("intensity", intensity);
             sqlDB.update("lamp", cv, "id = ?", new String[]{String.valueOf(lampId)});
         } finally {
-            //sqlDB.close();
+            sqlDB.close();
         }
     }
 }
