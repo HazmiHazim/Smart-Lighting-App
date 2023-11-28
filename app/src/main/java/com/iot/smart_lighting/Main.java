@@ -140,8 +140,8 @@ public class Main extends AppCompatActivity {
             } else {
                 String esp32Ssid = esp32.getESP32Ssid();
                 Log.d("SSID", "Retrieved SSID: " + esp32Ssid);
-                Log.d("SSID", "Comparison result: " + esp32Ssid.equalsIgnoreCase("\"ESP32-SMART-LIGHTING\""));
-                if (esp32Ssid.equalsIgnoreCase("\"ESP32-SMART-LIGHTING\"")) {
+                Log.d("SSID", "Comparison result: " + esp32Ssid.equalsIgnoreCase("\"ESP32-SMART-LAMP\""));
+                if (esp32Ssid.equalsIgnoreCase("\"ESP32-SMART-LAMP\"")) {
                     // Lamp 1
                     createData(1, esp32Ssid, 0, 1, 0);
                     // Lamp 2

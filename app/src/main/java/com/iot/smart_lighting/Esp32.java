@@ -67,7 +67,7 @@ public class Esp32 {
         sendRequest(url, Request.Method.GET, success, error);
     }
 
-    // Function to turn on/off lamp
+    // Function to control lamp
     public void applyLamp(String url) {
         // Request a string response from the URL
         // Use POST method to send the request by the user

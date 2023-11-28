@@ -8,6 +8,7 @@ import android.graphics.Color;
 import android.os.CountDownTimer;
 import android.os.Handler;
 import android.os.Looper;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -21,11 +22,10 @@ import com.iot.smart_lighting.Esp32;
 import com.iot.smart_lighting.Model.SmartLampDB;
 import com.iot.smart_lighting.R;
 
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
+import java.time.DateTimeException;
+import java.time.Duration;
+import java.time.LocalTime;
 import java.util.ArrayList;
-import java.util.Calendar;
-import java.util.Date;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
@@ -99,11 +99,18 @@ public class TimerAdapter extends RecyclerView.Adapter<TimerAdapter.TimerHolder>
                 holder.switchTimer.setChecked(finalStatus == 1);
                 if (finalStatus == 1) {
                     holder.timeName.setTextColor(Color.parseColor("#6A0DAD"));
-                    turnOnLamp(lampId);
                     startCountdown(lampId);
                 } else {
                     holder.timeName.setTextColor(Color.parseColor("#D9D9D9"));
-                    turnOffLamp(lampId);
+                    if (lampId == 1) {
+                        updateLampState(lampId, 0);
+                    }
+                    else if (lampId == 2) {
+                        updateLampState(lampId, 0);
+                    }
+                    else if (lampId == 3) {
+                        updateLampState(lampId, 0);
+                    }
                 }
             });
             holder.switchTimer.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
@@ -139,6 +146,53 @@ public class TimerAdapter extends RecyclerView.Adapter<TimerAdapter.TimerHolder>
         }
     }
 
+    private void startCountdown(int lampId) {
+        String timeSet = timeChoose;
+        try {
+            if (timeChoose != null) {
+                // Remove spaces from the timeChoose string
+                timeChoose = timeChoose.replaceAll("\\s+", "");
+                // Parse the timeChoose to LocalTime
+                LocalTime getTimeChoose = LocalTime.parse(timeChoose);
+                // Get current time
+                LocalTime currentTime = LocalTime.now();
+                // Calculate the time difference
+                long timeTobeCountdown = Duration.between(currentTime, getTimeChoose).toMillis();
+                countDownTimer = new CountDownTimer(timeTobeCountdown, 1000) {
+                    @Override
+                    public void onTick(long millisUntilFinished) {
+                        // Do Something
+                    }
+
+                    @Override
+                    public void onFinish() {
+                        updateSwitchState(lampId, timeSet, 0);
+                        updateLampState(lampId, 0);
+                    }
+                }.start();
+                // Use the timeToBeCountdown value directly in applyTimer and convert from millis to seconds
+                applyTimer(lampId, timeTobeCountdown / 1000);
+            }
+        } catch (DateTimeException exception) {
+            exception.printStackTrace();
+        }
+    }
+
+    // Function to set timer to the lamp
+    private void applyTimer(int lampId, long timer) {
+        if (lampId == 1) {
+            esp32.applyLamp("http://192.168.4.1/lamp1?timer=" + timer);
+            updateLampState(lampId, 1);
+            Log.d("Timer", "Timer Set: " + timer);
+        } else if (lampId == 2) {
+            esp32.applyLamp("http://192.168.4.1/lamp2?timer=" + timer);
+            updateLampState(lampId, 1);
+        } else {
+            esp32.applyLamp("http://192.168.4.1/lamp3?timer=" + timer);
+            updateLampState(lampId, 1);
+        }
+    }
+
     // Function to update switch status for each lamp_id and for specific time in database
     private void updateSwitchState(int lampId, String timer, int newStatus) {
         // Use try-finally to ensure db is close no matter what happen
@@ -151,61 +205,6 @@ public class TimerAdapter extends RecyclerView.Adapter<TimerAdapter.TimerHolder>
             sqlDB.update("lampTimer", cv, "lamp_id = ? AND time = ?", new String[]{String.valueOf(lampId), timer});
         } finally {
             //sqlDB.close();
-        }
-    }
-
-    private void startCountdown(int lampId) {
-        long timeTobeCountdown = 0;
-        //
-        try {
-            SimpleDateFormat sdf = new SimpleDateFormat("HH:mm");
-            Date getTimeChoose = sdf.parse(timeChoose);
-            // Get current time
-            Date currentTime = Calendar.getInstance().getTime();
-            // Calculate the time difference
-            timeTobeCountdown = getTimeChoose.getTime() - currentTime.getTime();
-        } catch (ParseException exception) {
-            exception.printStackTrace();
-        }
-        countDownTimer = new CountDownTimer(timeTobeCountdown, 1000) {
-            @Override
-            public void onTick(long millisUntilFinished) {
-                // Do Something
-            }
-
-            @Override
-            public void onFinish() {
-                updateSwitchState(lampId, timeChoose, 0);
-                //countDownTimer.cancel();
-            }
-        }.start();
-    }
-
-    // Function to turn on lamp
-    private void turnOnLamp(int lampId) {
-        if (lampId == 1) {
-            esp32.applyLamp("http://192.168.4.1/lamp1/on?value=255");
-            updateLampState(lampId, 1);
-        } else if (lampId == 2) {
-            esp32.applyLamp("http://192.168.4.1/lamp2/on?value=255");
-            updateLampState(lampId, 1);
-        } else {
-            esp32.applyLamp("http://192.168.4.1/lamp3/on?value=255");
-            updateLampState(lampId, 1);
-        }
-    }
-
-    // Function to turn off lamp when countdown have reach 0
-    private void turnOffLamp(int lampId) {
-        if (lampId == 1) {
-            esp32.applyLamp("http://192.168.4.1/lamp1/off");
-            updateLampState(lampId, 0);
-        } else if (lampId == 2) {
-            esp32.applyLamp("http://192.168.4.1/lamp2/off");
-            updateLampState(lampId, 0);
-        } else {
-            esp32.applyLamp("http://192.168.4.1/lamp3/off");
-            updateLampState(lampId, 0);
         }
     }
 
