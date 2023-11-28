@@ -21,7 +21,6 @@ public class ColourEditor extends AppCompatActivity {
 
     // Variable Declaration
     ImageView back, setting;
-    Button saveBtn, resetBtn;
     ColorPicker colourWheel;
     SaturationBar saturation;
     OpacityBar opacity;
@@ -35,8 +34,6 @@ public class ColourEditor extends AppCompatActivity {
 
         back = findViewById(R.id.back_btn3);
         setting = findViewById(R.id.setting_btn4);
-        saveBtn = findViewById(R.id.addColourBtn);
-        resetBtn = findViewById(R.id.resetColourBtn);
         colourWheel = findViewById(R.id.colourWheelPicker);
         saturation = findViewById(R.id.saturationBar);
         opacity = findViewById(R.id.opacityBar);
@@ -64,13 +61,6 @@ public class ColourEditor extends AppCompatActivity {
 
                 int rgb = Color.rgb(red, green, blue);
                 System.out.println("Color Value: " + rgb);
-            }
-        });
-
-        saveBtn.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                create();
             }
         });
     }

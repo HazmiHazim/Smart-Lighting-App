@@ -114,36 +114,6 @@
         app:layout_constraintTop_toBottomOf="@+id/saturationBar"
         app:layout_constraintVertical_bias="0.229" />
 
-    <Button
-        android:id="@+id/addColourBtn"
-        android:layout_width="200dp"
-        android:layout_height="80dp"
-        android:background="@drawable/colour_editor_custom_button"
-        android:text="Save"
-        android:textColor="#6A0DAD"
-        app:fontFamily="@font/inter_extrabold"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="1.0"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="1.0" />
-
-    <Button
-        android:id="@+id/resetColourBtn"
-        android:layout_width="200dp"
-        android:layout_height="80dp"
-        android:background="@drawable/colour_editor_custom_button"
-        android:text="Reset"
-        android:textColor="#6A0DAD"
-        app:fontFamily="@font/inter_extrabold"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toStartOf="@+id/addColourBtn"
-        app:layout_constraintHorizontal_bias="0.0"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="1.0" />
-
     <androidx.constraintlayout.widget.Guideline
         android:id="@+id/guideline"
         android:layout_width="wrap_content"
