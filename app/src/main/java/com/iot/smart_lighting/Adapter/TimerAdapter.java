@@ -117,9 +117,12 @@ public class TimerAdapter extends RecyclerView.Adapter<TimerAdapter.TimerHolder>
                 @Override
                 public void onCheckedChanged(CompoundButton switchButton, boolean isChecked) {
                     if (isChecked) {
+                        startCountdown(lampId);
                         updateSwitchState(lampId, timer, 1);
                         holder.timeName.setTextColor(Color.parseColor("#6A0DAD"));
                     } else {
+                        countDownTimer.cancel();
+                        esp32.applyLamp("http://192.168.4.1/timer?stop");
                         updateSwitchState(lampId, timer, 0);
                         holder.timeName.setTextColor(Color.parseColor("#D9D9D9"));
                     }
@@ -168,6 +171,7 @@ public class TimerAdapter extends RecyclerView.Adapter<TimerAdapter.TimerHolder>
                     public void onFinish() {
                         updateSwitchState(lampId, timeSet, 0);
                         updateLampState(lampId, 0);
+                        notifyDataSetChanged();
                     }
                 }.start();
                 // Use the timeToBeCountdown value directly in applyTimer and convert from millis to seconds
