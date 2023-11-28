@@ -3,13 +3,11 @@ package com.iot.smart_lighting;
 import android.app.TimePickerDialog;
 import android.content.ContentValues;
 import android.content.DialogInterface;
-import android.content.Intent;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
@@ -44,8 +42,8 @@ public class Timer extends AppCompatActivity {
 
     private String timeChoose;
 
-    // Variable to store the current selected index
-    int selectedIndex = 0;
+    // Variable to store the selected index. Initialize as "-1" means no selected index yet
+    private int selectedIndex = 0;
 
     // Initialize Arraylist Globally
     ArrayList<String> time = new ArrayList<String>();
@@ -90,12 +88,17 @@ public class Timer extends AppCompatActivity {
         // Add all selectors to the array
         selectorArr = new View[] {selector1, selector2, selector3};
 
+        // Set default navigation lamp page to lamp 1 when opening the page
+        selectNavigationLamp(0);
+
+        // Click event on which lamp is used
         for (int i = 0; i < timerLampArr.length; i++) {
             final int index = i;
             timerLampArr[i].setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
-                    selectNavigationPage(index);
+                    selectNavigationLamp(index);
+                    adapter.setSelectedIndex(index);
                 }
             });
         }
@@ -109,7 +112,17 @@ public class Timer extends AppCompatActivity {
 
             @Override
             public void onSwiped(RecyclerView.ViewHolder viewHolder, int direction) {
-                Toast.makeText(Timer.this, "Deleted Successfully", Toast.LENGTH_SHORT).show();
+                int position = viewHolder.getAdapterPosition();
+                if (position != RecyclerView.NO_POSITION) {
+                    String timer = time.get(position);
+                    deleteTimer(selectedIndex + 1, timer);
+                    time.remove(timer);
+                    adapter.notifyDataSetChanged();
+                    Toast.makeText(Timer.this, "Deleted Successfully", Toast.LENGTH_SHORT).show();
+                }
+                if (time.isEmpty()) {
+                    noTimerData.setVisibility(View.VISIBLE);
+                }
             }
         }).attachToRecyclerView(recyclerView);
 
@@ -117,13 +130,9 @@ public class Timer extends AppCompatActivity {
         back.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Intent intent = new Intent(Timer.this, Main.class);
-                startActivity(intent);
+                finish();
             }
         });
-
-        // Calling function read to get the time stored in DB
-        read();
 
         // Event when click floating action button
         addTimer.setOnClickListener(new View.OnClickListener() {
@@ -140,20 +149,20 @@ public class Timer extends AppCompatActivity {
                             @Override
                             public void onTimeSet(TimePicker timePicker, int hours, int minutes) {
                                 timeChoose = checkDigit(hours) + " : " + checkDigit(minutes);
-                                create(timeChoose);
                                 noTimerData.setVisibility(View.GONE);
                                 time.add(timeChoose);
-                                adapter.notifyDataSetChanged();
+                                // Save to SQL database
+                                createTimer(timeChoose, 1, selectedIndex + 1);
+                                adapter.setSelectedIndex(selectedIndex);
+                                adapter.setTimeChoose(timeChoose);
                                 Toast.makeText(Timer.this, "Set Time: " + timeChoose, Toast.LENGTH_SHORT).show();
-                                // Save to sql database
                             }
                         }, currentHour, currentMinutes, true);
 
                 timePickerSpinner.setButton(DialogInterface.BUTTON_POSITIVE, "Save", new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialogInterface, int i) {
-                        // Save to sql database
-                        //addTimer(timeChoose);
+                        // Nothing
                     }
                 });
 
@@ -163,7 +172,6 @@ public class Timer extends AppCompatActivity {
                         dialogTimer.dismiss();
                     }
                 });
-
                 timePickerSpinner.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
                 timePickerSpinner.setTitle("Set Timer");
                 timePickerSpinner.setCancelable(true);
@@ -178,55 +186,39 @@ public class Timer extends AppCompatActivity {
     }
 
     // Create a method to handle the navigation page
-    private void selectNavigationPage(int index) {
+    private void selectNavigationLamp(int index) {
         if (index != selectedIndex) {
             selectorArr[selectedIndex].setVisibility(View.GONE); // Hide the current selector
             selectorArr[index].setVisibility(View.VISIBLE); // Show the selector for the selected page
             selectedIndex = index; // Update the selected index
 
             // Perform any other actions or updates based on the selected index
-            // For example, you can update the content displayed on the screen
+            // For example, update the content displayed on the screen
         }
-    }
-
-    // Create lamp timer data in SQLite
-    private void create(String timeChoose) {
-        // Use try-finally to ensure db is close no matter what happen
-        try {
-            sqlDB = myDB.getWritableDatabase();
-            ContentValues cv = new ContentValues();
-            cv.put("time", timeChoose);
-            cv.put("status", "0");
-            cv.put("lamp_id", "1");
-            long result = sqlDB.insert("lampTimer", null, cv);
-            if (result == -1) {
-                Log.d("CREATE: ", "Fail");
-            }
-            else {
-                Log.d("CREATE: ", "Success");
-            }
-        }
-        finally {
-            sqlDB.close();
-        }
+        // Calling function getTime() to get the time stored in DB
+        getTimer(selectedIndex + 1);
     }
 
     // Get all timer data stored in SQLite
-    private void read() {
+    private void getTimer(int lampId) {
         // Use try-finally to ensure db is close no matter what happen
         try {
-            String query = "SELECT * FROM lampTimer WHERE lamp_id = 1";
+            String query = "SELECT * FROM lampTimer WHERE lamp_id = ?";
             sqlDB = myDB.getReadableDatabase();
-            Cursor cursor = sqlDB.rawQuery(query, null);
-            if (cursor.getCount() == 0) {
-                noTimerData.setVisibility(View.VISIBLE);
+            Cursor cursor = sqlDB.rawQuery(query, new String[] {String.valueOf(lampId)});
+            // Clear the existing timer list before adding new data
+            time.clear();
+            if (cursor.moveToFirst()) {
+                do {
+                    // Add each timer data to the list
+                    time.add(cursor.getString(cursor.getColumnIndexOrThrow("time")));
+                } while (cursor.moveToNext());
+                noTimerData.setVisibility(View.GONE);
             }
             else {
-                noTimerData.setVisibility(View.GONE);
-                while (cursor.moveToNext()) {
-                    time.add(cursor.getString(1));
-                }
+                noTimerData.setVisibility(View.VISIBLE);
             }
+            adapter.notifyDataSetChanged();
             cursor.close();
         }
         finally {
@@ -234,13 +226,28 @@ public class Timer extends AppCompatActivity {
         }
     }
 
-    //
-    private void delete(int id) {
+    // Create lamp timer data in SQLite
+    private void createTimer(String timeChoose, int status, int lampId) {
         // Use try-finally to ensure db is close no matter what happen
         try {
             sqlDB = myDB.getWritableDatabase();
-            sqlDB.delete("lampTimer", "id=?", new String[] {String.valueOf(id)});
-            Log.d("Delete: ", "Successful");
+            ContentValues cv = new ContentValues();
+            cv.put("time", timeChoose);
+            cv.put("status", status);
+            cv.put("lamp_id", lampId);
+            sqlDB.insert("lampTimer", null, cv);
+        }
+        finally {
+            sqlDB.close();
+        }
+    }
+
+    // Function to delete the selected timer from DB
+    private void deleteTimer(int lampId, String timer) {
+        // Use try-finally to ensure db is close no matter what happen
+        try {
+            sqlDB = myDB.getWritableDatabase();
+            sqlDB.delete("lampTimer", "lamp_id = ? AND time = ?", new String[] {String.valueOf(lampId), timer});
         }
         finally {
             sqlDB.close();

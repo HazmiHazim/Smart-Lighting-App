@@ -1,7 +1,6 @@
 package com.iot.smart_lighting;
 
 import android.content.ContentValues;
-import android.content.Intent;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.os.Bundle;
@@ -15,15 +14,8 @@ import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
 
-import com.android.volley.Request;
-import com.android.volley.RequestQueue;
-import com.android.volley.Response;
-import com.android.volley.VolleyError;
-import com.android.volley.toolbox.StringRequest;
-import com.android.volley.toolbox.Volley;
 import com.iot.smart_lighting.Model.SmartLampDB;
 
-import java.util.Queue;
 
 public class LampController extends AppCompatActivity {
 
@@ -33,9 +25,9 @@ public class LampController extends AppCompatActivity {
     SeekBar intensity1, intensity2, intensity3;
     SmartLampDB myDB;
     SQLiteDatabase sqlDB;
-    String networkName;
-    int lampStatus;
-    int intensity;
+
+    // Declare ESP32 class
+    Esp32 esp32;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -66,257 +58,153 @@ public class LampController extends AppCompatActivity {
         // Create instance for SmartLampDB
         myDB = new SmartLampDB(LampController.this);
 
-        // Call function to ping to the ESP32
-        pingESP32();
+        // Instantiate ESP32 Class
+        esp32 = new Esp32(LampController.this);
 
-        // Call function to get state of lamp
-        getLampStates();
+        // Get initial state of each lamp
+        getInitialStates(switch1, bulb1, bulb1_on, intensity1, 1);
+        getInitialStates(switch2, bulb2, bulb2_on, intensity2, 2);
+        getInitialStates(switch3, bulb3, bulb3_on, intensity3, 3);
+
+        // Event when click switch 1
+        int intensityValue1 = getIntensityValue(1);  // Call getIntensityValue() to get the value from database
+        eventSwitch(switch1, bulb1, bulb1_on, intensity1, 1, "http://192.168.4.1/lamp1/on?value=" + intensityValue1, "http://192.168.4.1/lamp1/off");
+        // Event when click switch 2
+        int intensityValue2 = getIntensityValue(2);  // Call getIntensityValue() to get the value from database
+        eventSwitch(switch2, bulb2, bulb2_on, intensity2, 2, "http://192.168.4.1/lamp2/on?value=" + intensityValue2, "http://192.168.4.1/lamp2/off");
+        // Event when click switch 3
+        int intensityValue3 = getIntensityValue(3);  // Call getIntensityValue() to get the value from database
+        eventSwitch(switch3, bulb3, bulb3_on, intensity3, 3, "http://192.168.4.1/lamp3/on?value=" + intensityValue3, "http://192.168.4.1/lamp3/off");
+
+        // Event when slide the seekbar 1
+        eventSeekBar(intensity1, 1, "http://192.168.4.1/lamp1/on?value=");
+        // Event when slide the seekbar 2
+        eventSeekBar(intensity2, 2, "http://192.168.4.1/lamp2/on?value=");
+        // Event when slide the seekbar 3
+        eventSeekBar(intensity3, 3, "http://192.168.4.1/lamp3/on?value=");
 
         // Event when click back icon button
         back.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Intent intent = new Intent(LampController.this, Main.class);
-                startActivity(intent);
+                finish();
             }
         });
+    }
 
-        // Event when click switch 1
-        switch1.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+    // Function for Switch Click Event
+    public void eventSwitch(Switch switchButton, ImageView bulbOff, ImageView bulbOn, SeekBar intensity, int lampId, String onEndpoint, String offEndpoint) {
+        switchButton.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             @Override
-            public void onCheckedChanged(CompoundButton switchButton, boolean a) {
-                if(switchButton.isChecked())
-                {
-                    bulb1.setVisibility(View.GONE);
-                    bulb1_on.setVisibility(View.VISIBLE);
-                    intensity1.setVisibility(View.VISIBLE);
-                    applyLamp(1);  // Calling function applyLamp() to turn on the lamp
-                    Toast.makeText(LampController.this, "Lamp 1 is on", Toast.LENGTH_SHORT).show();
-                    // LED connection....
-                    //
-                    // User must connect with ESP32 to create the data otherwise it cannot be created
-                    // THIS IS JUST A DUMMY ------EDIT THIS PART ONWARDS---------
-                    networkName = "ESP32 Network";
-                    lampStatus = 1;
-                    intensity = 20;
-                    sqlDB = myDB.getReadableDatabase();
-                    Cursor cursor = sqlDB.rawQuery("SELECT id FROM lamp WHERE id = 1", null);
-                    if (cursor.moveToFirst()) {
-                        update(1, intensity, lampStatus);
-                    }
-                    else {
-                        create(networkName, lampStatus, intensity);
-                    }
-                }
-                else
-                {
-                    applyLamp(2); // Calling function applyLamp() to turn on the lamp
-                    // THIS IS JUST A DUMMY ------EDIT THIS PART ONWARDS---------
-                    lampStatus = 0;
-                    intensity = 20;
-                    update(1, intensity, lampStatus);
-                    // LED connection....
-                    //
-                    //
-                    bulb1.setVisibility(View.VISIBLE);
-                    bulb1_on.setVisibility(View.GONE);
-                    intensity1.setVisibility(View.GONE);
-                    Toast.makeText(LampController.this, "Lamp 1 is off", Toast.LENGTH_SHORT).show();
+            public void onCheckedChanged(CompoundButton button, boolean isChecked) {
+                if (isChecked) {
+                    bulbOff.setVisibility(View.GONE);
+                    bulbOn.setVisibility(View.VISIBLE);
+                    intensity.setVisibility(View.VISIBLE);
+                    esp32.applyLamp(onEndpoint);
+                    updateLampState(lampId, 1);
+                    Toast.makeText(LampController.this, "Turn on lamp " + lampId, Toast.LENGTH_SHORT).show();
+                } else {
+                    bulbOff.setVisibility(View.VISIBLE);
+                    bulbOn.setVisibility(View.GONE);
+                    intensity.setVisibility(View.GONE);
+                    esp32.applyLamp(offEndpoint);
+                    updateLampState(lampId, 0);
+                    Toast.makeText(LampController.this, "Turn off lamp " + lampId, Toast.LENGTH_SHORT).show();
                 }
             }
         });
+    }
 
-        // Event when click switch 2
-        switch2.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+    private void eventSeekBar(SeekBar seekBar, int lampId, String url) {
+        seekBar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
             @Override
-            public void onCheckedChanged(CompoundButton switchButton2, boolean b) {
-                if(switchButton2.isChecked())
-                {
-                    bulb2.setVisibility(View.GONE);
-                    bulb2_on.setVisibility(View.VISIBLE);
-                    intensity2.setVisibility(View.VISIBLE);
-                    applyLamp(3);  // Calling function applyLamp() to turn on the lamp
-                    Toast.makeText(LampController.this, "Lamp 2 is on", Toast.LENGTH_SHORT).show();
-                    // LED connection....
-                    //
-                    //
-                }
-                else
-                {
-                    applyLamp(4); // Calling function applyLamp() to turn on the lamp
-                    // LED connection....
-                    //
-                    //
-                    bulb2.setVisibility(View.VISIBLE);
-                    bulb2_on.setVisibility(View.GONE);
-                    intensity2.setVisibility(View.GONE);
-                    Toast.makeText(LampController.this, "Lamp 2 is off", Toast.LENGTH_SHORT).show();
-                }
-            }
-        });
-
-        // Event when click switch 3
-        switch3.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
-            @Override
-            public void onCheckedChanged(CompoundButton switchButton3, boolean c) {
-                if(switchButton3.isChecked())
-                {
+            public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
+                int intensityValue = progress;
+                // Use try-finally to ensure db is close no matter what happen
+                try {
                     sqlDB = myDB.getWritableDatabase();
-                    sqlDB.delete("lamp", null, null);
-                    sqlDB.delete("lampTimer", null, null);
-                    sqlDB.delete("lampColour", null, null);
-                    bulb3.setVisibility(View.GONE);
-                    bulb3_on.setVisibility(View.VISIBLE);
-                    intensity3.setVisibility(View.VISIBLE);
-                    applyLamp(5);  // Calling function applyLamp() to turn on the lamp
-                    Toast.makeText(LampController.this, "Lamp 3 is on", Toast.LENGTH_SHORT).show();
-                    // LED connection....
-                    //
-                    //
+                    ContentValues cv = new ContentValues();
+                    cv.put("intensity", intensityValue);
+                    sqlDB.update("lamp", cv, "id = ?", new String[]{String.valueOf(lampId)});
+                } finally {
+                    sqlDB.close();
                 }
-                else
-                {
-                    applyLamp(6); // Calling function applyLamp() to turn on the lamp
-                    // LED connection....
-                    //
-                    //
-                    bulb3.setVisibility(View.VISIBLE);
-                    bulb3_on.setVisibility(View.GONE);
-                    intensity3.setVisibility(View.GONE);
-                    Toast.makeText(LampController.this, "Lamp 3 is off", Toast.LENGTH_SHORT).show();
-                }
+                Log.d("Seek Bar Value: ", String.valueOf(seekBar.getProgress()));
+
+                String dynamicUrl = url + intensityValue;
+                esp32.applyLamp(dynamicUrl);
+            }
+
+            @Override
+            public void onStartTrackingTouch(SeekBar seekBar) {
+                // Do Something
+            }
+
+            @Override
+            public void onStopTrackingTouch(SeekBar seekBar) {
+                // Do Something
             }
         });
     }
 
-    // Function to ping to ESP32
-    public void pingESP32() {
-        // Instantiate the RequestQueue
-        RequestQueue queue= Volley.newRequestQueue(LampController.this);
-        String url = "http://192.168.0.1/ping";
-
-        // Request a string response  from the URL
-        StringRequest stringRequest = new StringRequest(Request.Method.GET, url, new Response.Listener<String>() {
-            @Override
-            public void onResponse(String response) {
-                Log.d("Response: ", response);
-                Toast.makeText(LampController.this, "Response: " + response, Toast.LENGTH_SHORT).show();
-            }
-        }, new Response.ErrorListener() {
-            @Override
-            public void onErrorResponse(VolleyError error) {
-                Log.d("Response: ", String.valueOf(error));
-                Toast.makeText(LampController.this, "Response: " + error.toString(), Toast.LENGTH_SHORT).show();
-            }
-        });
-
-        // Add the request to the RequestQueue
-        queue.add(stringRequest);
-    }
-
-    // Function to get state of the lamp
-    public void getLampStates() {
-        // Instantiate the RequestQueue
-        RequestQueue queue = Volley.newRequestQueue(LampController.this);
-        String url = "http://192.168.0.1/state";
-
-        // Request a string response  from the URL
-        StringRequest stringRequest = new StringRequest(Request.Method.GET, url, new Response.Listener<String>() {
-            @Override
-            public void onResponse(String response) {
-                Log.d("Response: ", response);
-                Toast.makeText(LampController.this, "Response: " + response, Toast.LENGTH_SHORT).show();
-            }
-        }, new Response.ErrorListener() {
-            @Override
-            public void onErrorResponse(VolleyError error) {
-                Log.d("Response: ", String.valueOf(error));
-                Toast.makeText(LampController.this, "Response: " + error.toString(), Toast.LENGTH_SHORT).show();
-            }
-        });
-
-        // Add the request to the RequestQueue
-        queue.add(stringRequest);
-    }
-
-    // Function to turn on/off lamp
-    public void applyLamp(int input) {
-        // Instantiate the RequestQueue
-        RequestQueue queue = Volley.newRequestQueue(LampController.this);
-        String url = "http://192.168.0.1/lamp";
-
-        // Request a string response  from the URL
-        // Use POST method to send the request by the user
-        StringRequest stringRequest = new StringRequest(Request.Method.POST, url, new Response.Listener<String>() {
-            @Override
-            public void onResponse(String response) {
-                Log.d("Response: ", response);
-                Toast.makeText(LampController.this, "Response: " + response, Toast.LENGTH_SHORT).show();
-            }
-        }, new Response.ErrorListener() {
-            @Override
-            public void onErrorResponse(VolleyError error) {
-                Log.d("Response: ", String.valueOf(error));
-                Toast.makeText(LampController.this, "Response: " + error.toString(), Toast.LENGTH_SHORT).show();
-            }
-        });
-
-        // Add the request to the RequestQueue
-        queue.add(stringRequest);
-    }
-
-    // Create lamp data in SQLite
-    private void create(String networkName, int lampStatus, int intensity) {
+    // Function to Set Initial State of Switch Button
+    private void getInitialStates(Switch switchButton, ImageView bulbOff, ImageView bulbOn, SeekBar intensity, int lampId) {
         // Use try-finally to ensure db is close no matter what happen
         try {
-            sqlDB = myDB.getWritableDatabase();
-            ContentValues cv = new ContentValues();
-            cv.put("ssid_name", networkName);
-            cv.put("connection", "1");
-            cv.put("status", lampStatus);
-            cv.put("intensity", intensity);
-            long id = sqlDB.insert("lamp", null, cv);
-            if (id == -1) {
-                Log.d("CREATE: ", "Fail");
+            String query = "SELECT * FROM lamp WHERE id = ?";
+            sqlDB = myDB.getReadableDatabase();
+            Cursor cursor = sqlDB.rawQuery(query, new String[]{String.valueOf(lampId)});
+            if (cursor.moveToFirst()) {
+                int status = cursor.getInt(cursor.getColumnIndexOrThrow("status"));
+                int intensitySavedValue = cursor.getInt(cursor.getColumnIndexOrThrow("intensity"));
+                if (status == 0) {
+                    switchButton.setChecked(false);
+                    bulbOff.setVisibility(View.VISIBLE);
+                    bulbOn.setVisibility(View.GONE);
+                    intensity.setVisibility(View.GONE);
+                    intensity.setProgress(intensitySavedValue);
+                } else {
+                    switchButton.setChecked(true);
+                    bulbOff.setVisibility(View.GONE);
+                    bulbOn.setVisibility(View.VISIBLE);
+                    intensity.setVisibility(View.VISIBLE);
+                    intensity.setProgress(intensitySavedValue);
+                }
             }
-            else {
-                Log.d("CREATE: ", "Success");
-            }
-        }
-        finally {
+            cursor.close();
+        } finally {
             sqlDB.close();
         }
     }
 
-    // Update lamp data
-    private void update(int id, int intensity, int lampStatus){
-        // Use try-finally to ensure db is close no matter what happen
+    // Function to get intensity value from DB
+    private int getIntensityValue(int lampId) {
         try {
-            sqlDB = myDB.getWritableDatabase();
-            ContentValues cv = new ContentValues();
-            cv.put("status", lampStatus);
-            long result = sqlDB.update("lamp", cv, "id=?", new String[] {String.valueOf(id)} );
-            if (result == -1) {
-                Log.d("UPDATE: ", "Fail");
+            String query = "SELECT * FROM lamp WHERE id = ?";
+            sqlDB = myDB.getReadableDatabase();
+            Cursor cursor = sqlDB.rawQuery(query, new String[] {String.valueOf(lampId)});
+            if (cursor.moveToFirst()) {
+                int intensityValue = cursor.getInt(cursor.getColumnIndexOrThrow("intensity"));
+                return intensityValue;
             }
-            else {
-                Log.d("UPDATE: ", "Success");
-            }
-        }
-        finally {
+            cursor.close();
+        } finally {
             sqlDB.close();
         }
+        return 0;
     }
 
-    // Delete table lamp
-    private void delete() {
+    // Function to update initial state of each lamp
+    private void updateLampState(int lampId, int newStatus) {
         // Use try-finally to ensure db is close no matter what happen
         try {
+            // Open The Database for Reading
             sqlDB = myDB.getWritableDatabase();
-            sqlDB.delete("lamp", "id=?", new String[] {String.valueOf(1)});
-            Log.d("DELETE: ", "Successful");
-        }
-        finally {
+            ContentValues cv = new ContentValues();
+            cv.put("status", newStatus);
+            sqlDB.update("lamp", cv, "id = ?", new String[]{String.valueOf(lampId)});
+        } finally {
             sqlDB.close();
         }
     }

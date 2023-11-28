@@ -8,6 +8,8 @@ public class LampModel {
     private int connection;
     private int status;
 
+    public LampModel() {}
+
     public LampModel(int id, String ssidName, int intensity, int connection, int status) {
         this.id = id;
         this.ssidName = ssidName;

@@ -3,7 +3,18 @@
     xmlns:tools="http://schemas.android.com/tools"
     package="com.iot.smart_lighting">
 
+    <!-- To use volley and connect to the network -->
     <uses-permission android:name="android.permission.INTERNET"/>
+    <!-- To access connected network ssid -->
+    <uses-permission android:name="android.permission.ACCESS_WIFI_STATE"/>
+    <!-- To get access to use SSID Network -->
+    <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION"/>
+    <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION"/>
+
+    <!-- To get access to store asset files -->
+    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE"/>
+    <!-- To get access to use Microphone -->
+    <uses-permission android:name="android.permission.RECORD_AUDIO"/>
 
     <application
         android:allowBackup="true"
@@ -14,6 +25,7 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/Theme.SmartLightingApp"
+        android:usesCleartextTraffic="true"
         tools:targetApi="31" >
 
         <!-- Features -->

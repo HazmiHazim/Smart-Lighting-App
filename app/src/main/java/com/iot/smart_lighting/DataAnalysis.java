@@ -1,34 +1,31 @@
 package com.iot.smart_lighting;
 
 import android.content.Intent;
-import android.database.Cursor;
-import android.database.sqlite.SQLiteDatabase;
+import android.graphics.Color;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.View;
 import android.widget.ImageView;
 
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.recyclerview.widget.LinearLayoutManager;
-import androidx.recyclerview.widget.RecyclerView;
 
-import com.iot.smart_lighting.Adapter.DataAnalysisAdapter;
-import com.iot.smart_lighting.Model.SmartLampDB;
+import com.github.mikephil.charting.charts.LineChart;
+import com.github.mikephil.charting.components.Description;
+import com.github.mikephil.charting.components.XAxis;
+import com.github.mikephil.charting.components.YAxis;
+import com.github.mikephil.charting.data.Entry;
+import com.github.mikephil.charting.data.LineData;
+import com.github.mikephil.charting.data.LineDataSet;
+import com.github.mikephil.charting.formatter.IndexAxisValueFormatter;
 
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 
 public class DataAnalysis extends AppCompatActivity {
 
-    ImageView back, setting, emptyDataIcon;
-    RecyclerView recyclerView;
-
-    // Declare adapter instance
-    DataAnalysisAdapter adapter;
-
-    SmartLampDB myDB;
-    ArrayList <Integer> id, status, intensity;
-    ArrayList <String> ssid_name, colour;
-    SQLiteDatabase sqlDB;
+    ImageView back, setting;
+    LineChart lineChart;
+    List<String> xValues;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -37,54 +34,67 @@ public class DataAnalysis extends AppCompatActivity {
 
         back = findViewById(R.id.back_btn4);
         setting = findViewById(R.id.setting_btn5);
-        emptyDataIcon = findViewById(R.id.noDeviceConnected);
-        recyclerView = findViewById(R.id.recyclerViewDataAnalysis);
-
-        // Create instance for SmartLampDB
-        myDB = new SmartLampDB(DataAnalysis.this);
-
-        id = new ArrayList<Integer>();
-        ssid_name = new ArrayList<String>();
-        status = new ArrayList<Integer>();
-        intensity = new ArrayList<Integer>();
-        colour = new ArrayList<String>();
-
-        read();
-
-        // Attach DataAnalysisAdapter to this class
-        adapter = new DataAnalysisAdapter(DataAnalysis.this, id, ssid_name, status, intensity, colour);
-        recyclerView.setLayoutManager(new LinearLayoutManager(DataAnalysis.this));
-        recyclerView.setAdapter(adapter);
+        lineChart = findViewById(R.id.line_chart);
 
         back.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Intent intent = new Intent(DataAnalysis.this, Main.class);
-                startActivity(intent);
+                finish();
             }
         });
 
-    }
+        Description description = new Description();
+        description.setText("Voltage (V)");
+        description.setPosition(150f, 15f);
+        lineChart.setDescription(description);
+        lineChart.getAxisRight().setDrawLabels(false);
 
-    // Fetch data from SmartLamp db
-    private void read() {
-        String query = "SELECT * FROM lamp INNER JOIN lampColour ON lamp.id = lampColour.lamp_id ";
-        sqlDB = myDB.getReadableDatabase();
-        Cursor cursor = sqlDB.rawQuery(query, null);
-        if (cursor.getCount() == 0) {
-            emptyDataIcon.setVisibility(View.VISIBLE);
-        }
-        else {
-            emptyDataIcon.setVisibility(View.GONE);
-            while (cursor.moveToNext()) {
-                id.add(cursor.getInt(0));
-                ssid_name.add(cursor.getString(1));
-                intensity.add(cursor.getInt(2));
-                status.add(cursor.getInt(4));
-                colour.add(cursor.getString(1));
-            }
-            Log.d("FETCH: ", "Successful");
-        }
-        cursor.close();
+        xValues = Arrays.asList("LampModel 1", "LampModel 2", "LampModel 3");
+
+        XAxis x = lineChart.getXAxis();
+        x.setPosition(XAxis.XAxisPosition.BOTTOM);
+        x.setValueFormatter(new IndexAxisValueFormatter(xValues));
+        x.setLabelCount(4);
+        x.setGranularity(1f);
+
+        YAxis y = lineChart.getAxisLeft();
+        y.setAxisMinimum(0f);
+        y.setAxisMaximum(100f);
+        y.setAxisLineWidth(2f);
+        y.setLabelCount(10);
+
+        // Dummy data for lamp 1
+        List<Entry> entries1 = new ArrayList<>();
+        entries1.add(new Entry(0, 10f));
+        entries1.add(new Entry(1, 10f));
+        entries1.add(new Entry(2, 15f));
+        entries1.add(new Entry(3, 45f));
+
+        // Dummy data for lamp 2
+        List<Entry> entries2 = new ArrayList<>();
+        entries2.add(new Entry(0, 80f));
+        entries2.add(new Entry(1, 60f));
+        entries2.add(new Entry(2, 50f));
+        entries2.add(new Entry(3, 30f));
+
+        // Dummy data for lamp 3
+        List<Entry> entries3 = new ArrayList<>();
+        entries3.add(new Entry(0, 35));
+        entries3.add(new Entry(1, 70f));
+        entries3.add(new Entry(2, 40f));
+        entries3.add(new Entry(3, 25f));
+
+        LineDataSet dataSet1 = new LineDataSet(entries1, "LampModel 1");
+        dataSet1.setColor(Color.GREEN);
+
+        LineDataSet dataSet2 = new LineDataSet(entries2, "LampModel 2");
+        dataSet2.setColor(Color.BLUE);
+
+        LineDataSet dataSet3 = new LineDataSet(entries3, "LampModel 3");
+        dataSet3.setColor(Color.RED);
+
+        LineData lineData = new LineData(dataSet1, dataSet2, dataSet3);
+        lineChart.setData(lineData);
+        lineChart.invalidate();
     }
 }
