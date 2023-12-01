@@ -263,7 +263,6 @@ public class VoiceRecognition implements RecognitionListener {
 
     // Function to update the lamp back to on in SQLite database
     private void revertLampState() {
-        Log.d("Stop", "String Stop: " + lamp);
         switch (lamp) {
             case "lamp1":
                 updateLamp(1, 1, 255);

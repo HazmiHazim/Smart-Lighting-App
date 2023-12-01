@@ -20,7 +20,7 @@ import com.larswerkman.holocolorpicker.SaturationBar;
 public class ColourEditor extends AppCompatActivity {
 
     // Variable Declaration
-    ImageView back, setting;
+    ImageView back, info;
     ColorPicker colourWheel;
     SaturationBar saturation;
     OpacityBar opacity;
@@ -33,7 +33,7 @@ public class ColourEditor extends AppCompatActivity {
         setContentView(R.layout.colour_editor);
 
         back = findViewById(R.id.back_btn3);
-        setting = findViewById(R.id.setting_btn4);
+        info = findViewById(R.id.info_btn4);
         colourWheel = findViewById(R.id.colourWheelPicker);
         saturation = findViewById(R.id.saturationBar);
         opacity = findViewById(R.id.opacityBar);

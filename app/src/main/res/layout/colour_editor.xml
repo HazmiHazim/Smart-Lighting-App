@@ -22,7 +22,7 @@
         app:srcCompat="@drawable/back_button" />
 
     <ImageView
-        android:id="@+id/setting_btn4"
+        android:id="@+id/info_btn4"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:foreground="?android:attr/selectableItemBackground"
@@ -32,7 +32,7 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintVertical_bias="0.067"
-        app:srcCompat="@drawable/setting_button" />
+        app:srcCompat="@drawable/baseline_info_24" />
 
     <TextView
         android:id="@+id/textView"

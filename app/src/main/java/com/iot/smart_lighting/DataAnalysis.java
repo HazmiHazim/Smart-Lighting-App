@@ -23,7 +23,7 @@ import java.util.List;
 
 public class DataAnalysis extends AppCompatActivity {
 
-    ImageView back, setting;
+    ImageView back, info;
     LineChart lineChart;
     List<String> xValues;
 
@@ -33,7 +33,7 @@ public class DataAnalysis extends AppCompatActivity {
         setContentView(R.layout.data_analysis);
 
         back = findViewById(R.id.back_btn4);
-        setting = findViewById(R.id.setting_btn5);
+        info = findViewById(R.id.info_btn5);
         lineChart = findViewById(R.id.line_chart);
 
         back.setOnClickListener(new View.OnClickListener() {

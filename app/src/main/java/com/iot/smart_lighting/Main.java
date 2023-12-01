@@ -1,6 +1,7 @@
 package com.iot.smart_lighting;
 
 import android.Manifest;
+import android.app.AlertDialog;
 import android.content.ContentValues;
 import android.content.Intent;
 import android.content.pm.PackageManager;
@@ -24,7 +25,7 @@ public class Main extends AppCompatActivity {
 
     // Variable Declaration
     CardView feature1, feature2, feature3, feature4;
-    ImageView settingMenu;
+    ImageView info;
     SmartLampDB myDB;
     SQLiteDatabase sqlDB;
 
@@ -43,7 +44,7 @@ public class Main extends AppCompatActivity {
         feature2 = findViewById(R.id.cardView2);
         feature3 = findViewById(R.id.cardView3);
         feature4 = findViewById(R.id.cardView4);
-        settingMenu = findViewById(R.id.setting_btn1);
+        info = findViewById(R.id.info_btn1);
 
         myDB = new SmartLampDB(Main.this);
 
@@ -56,25 +57,18 @@ public class Main extends AppCompatActivity {
         // Ask for permission to access location and to access microphone
         requestPermissions(new String[]{Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.RECORD_AUDIO}, 200);
 
-        settingMenu.setOnClickListener(new View.OnClickListener() {
+        info.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                // Inflate the menu layout
-                PopupMenu popupMenu = new PopupMenu(Main.this, view);
-                popupMenu.getMenuInflater().inflate(R.menu.setting, popupMenu.getMenu());
-                popupMenu.setOnMenuItemClickListener(new PopupMenu.OnMenuItemClickListener() {
-                    @Override
-                    public boolean onMenuItemClick(MenuItem menuItem) {
-                        if (menuItem.getItemId() == R.id.darkMode) {
-                            // Handle dark mode
-                        } else {
-                            // Handle light mode
-                        }
-                        return true;
-                    }
-                });
-                popupMenu.show();
-
+                // Display info in alert dialog box
+                AlertDialog.Builder infoBox = new AlertDialog.Builder(Main.this);
+                infoBox.setIcon(R.drawable.phoenix);
+                infoBox.setTitle("Phoenix Intelligence Guide");
+                infoBox.setMessage("Step 1: Say 'HEY PHOENIX' to wake up Phoenix." +
+                        "\nStep 2: Say 'COMMANDS' to let Phoenix know you want to issue a command." +
+                        "\nStep 3: Say a simple command, such as 'TURN ON LAMP 1'.");
+                AlertDialog alertDialog = infoBox.create();
+                alertDialog.show();
             }
         });
 

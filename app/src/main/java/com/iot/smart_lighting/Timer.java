@@ -29,7 +29,7 @@ import java.util.Calendar;
 public class Timer extends AppCompatActivity {
 
     // Variable Declaration
-    ImageView back, setting, noTimerData;
+    ImageView back, info, noTimerData;
     LinearLayout lampNavTimer, timerLamp1, timerLamp2, timerLamp3;
     LinearLayout timerLampArr[];
     FloatingActionButton addTimer;
@@ -54,7 +54,7 @@ public class Timer extends AppCompatActivity {
         setContentView(R.layout.timer);
 
         back = findViewById(R.id.back_btn2);
-        setting = findViewById(R.id.setting_btn3);
+        info = findViewById(R.id.info_btn3);
         noTimerData = findViewById(R.id.noTimerFound);
 
         // Assign XML to variable for navigation timer

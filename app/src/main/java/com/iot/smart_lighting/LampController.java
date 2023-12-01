@@ -21,7 +21,7 @@ public class LampController extends AppCompatActivity {
 
     // Variable Declaration
     Switch switch1, switch2, switch3;
-    ImageView back, setting, bulb1, bulb2, bulb3, bulb1_on, bulb2_on, bulb3_on;
+    ImageView back, info, bulb1, bulb2, bulb3, bulb1_on, bulb2_on, bulb3_on;
     SeekBar intensity1, intensity2, intensity3;
     SmartLampDB myDB;
     SQLiteDatabase sqlDB;
@@ -35,7 +35,7 @@ public class LampController extends AppCompatActivity {
         setContentView(R.layout.lamp_controller);
 
         back = findViewById(R.id.back_btn1);
-        setting = findViewById(R.id.setting_btn2);
+        info = findViewById(R.id.info_btn2);
 
         // Assign XML to variable for Lamp 1
         switch1 = findViewById(R.id.lSwitch1);
