@@ -21,4 +21,5 @@ public <command> = turn on lamp one |
                    turn off all lamp |
                    set timer to <unit> for lamp one |
                    set timer to <unit> for lamp two |
-                   set timer to <unit> for lamp three;
+                   set timer to <unit> for lamp three |
+                   stop timer;

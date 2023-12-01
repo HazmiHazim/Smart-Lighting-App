@@ -41,6 +41,9 @@ public class VoiceRecognition implements RecognitionListener {
     SmartLampDB myDB;
     SQLiteDatabase sqlDB;
 
+    // Global Variable to store the lamp use for stop timer
+    private String lamp;
+
     public VoiceRecognition(Context context) {
         this.context = context;
         this.esp32 = new Esp32(context);
@@ -173,7 +176,7 @@ public class VoiceRecognition implements RecognitionListener {
             String lampString = matcher.group(2);
             // Convert the text duration to an integer value
             int duration = convertDurationStringToEndpoint(durationString);
-            String lamp = convertLampStringToEndPoint(lampString);
+            lamp = convertLampStringToEndPoint(lampString);
             String endPoint = "http://192.168.4.1/" + lamp + "?timer=" + duration;
             esp32.applyLamp(endPoint);
             updateLamp(Integer.parseInt(lamp.replaceAll("[\\D]", "")), 0, 0);
@@ -219,6 +222,10 @@ public class VoiceRecognition implements RecognitionListener {
                 updateLamp(2, 0, 0);
                 updateLamp(3, 0, 0);
                 break;
+            case "stop timer":
+                esp32.applyLamp("http://192.168.4.1/timer?stop");
+                revertLampState();
+                break;
             default:
                 //Toast.makeText(context, "Sorry! Unrecognized command.", Toast.LENGTH_SHORT).show();
                 break;
@@ -240,6 +247,7 @@ public class VoiceRecognition implements RecognitionListener {
         }
     }
 
+    // Function to convert voice text to string value for endpoint to send request to ESP32
     private String convertLampStringToEndPoint(String lampString) {
         switch (lampString) {
             case "lamp one":
@@ -253,6 +261,25 @@ public class VoiceRecognition implements RecognitionListener {
         }
     }
 
+    // Function to update the lamp back to on in SQLite database
+    private void revertLampState() {
+        Log.d("Stop", "String Stop: " + lamp);
+        switch (lamp) {
+            case "lamp1":
+                updateLamp(1, 1, 255);
+                break;
+            case "lamp2":
+                updateLamp(2, 1, 255);
+                break;
+            case "lamp3":
+                updateLamp(3, 1, 255);
+                break;
+            default:
+                break;
+        }
+    }
+
+    // Function to convert voice text to integer value for endpoint to send the request to ESP32
     private int convertDurationStringToEndpoint(String durationString) {
         // Map to store the mapping between textual representations and values
         Map<String, Integer> map = new HashMap<>();
