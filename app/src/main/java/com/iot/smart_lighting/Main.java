@@ -151,6 +151,7 @@ public class Main extends AppCompatActivity {
 
     // Function to create a data into local database by given parameters
     private void createData(int id, String ssid, int intensity, int connection, int status) {
+        // Use try-finally to ensure db is close no matter what happen
         try {
             sqlDB = myDB.getWritableDatabase();
             ContentValues cv = new ContentValues();

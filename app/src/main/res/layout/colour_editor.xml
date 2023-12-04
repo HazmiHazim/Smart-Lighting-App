@@ -34,6 +34,88 @@
         app:layout_constraintVertical_bias="0.067"
         app:srcCompat="@drawable/baseline_info_24" />
 
+    <LinearLayout
+        android:id="@+id/lampNavigationColour"
+        android:layout_width="220dp"
+        android:layout_height="wrap_content"
+        android:background="#00FFFFFF"
+        android:gravity="center"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.497"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.065">
+
+        <LinearLayout
+            android:id="@+id/lNav4"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:gravity="center"
+            android:foreground="?android:attr/selectableItemBackground">
+
+            <ImageView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_margin="16dp"
+                app:srcCompat="@drawable/navigation_1" />
+
+            <View
+                android:id="@+id/lNavSelector4"
+                android:layout_width="25dp"
+                android:layout_height="5dp"
+                android:background="#6A0DAD"
+                android:visibility="visible" />
+
+        </LinearLayout>
+
+        <LinearLayout
+            android:id="@+id/lNav5"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:gravity="center"
+            android:foreground="?android:attr/selectableItemBackground">
+            <ImageView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_margin="16dp"
+                app:srcCompat="@drawable/navigation_2" />
+
+            <View
+                android:id="@+id/lNavSelector5"
+                android:layout_width="25dp"
+                android:layout_height="5dp"
+                android:background="#6A0DAD"
+                android:visibility="gone" />
+
+        </LinearLayout>
+
+        <LinearLayout
+            android:id="@+id/lNav6"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:gravity="center"
+            android:foreground="?android:attr/selectableItemBackground">
+            <ImageView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_margin="16dp"
+                app:srcCompat="@drawable/navigation_3" />
+
+            <View
+                android:id="@+id/lNavSelector6"
+                android:layout_width="25dp"
+                android:layout_height="5dp"
+                android:background="#6A0DAD"
+                android:visibility="gone" />
+
+        </LinearLayout>
+
+    </LinearLayout>
+
     <TextView
         android:id="@+id/textView"
         android:layout_width="wrap_content"
@@ -91,20 +173,20 @@
         android:id="@+id/textView2"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Opacity:"
+        android:text="Luminance:"
         android:textColor="#6A0DAD"
         android:textSize="14dp"
         android:textStyle="bold"
         app:fontFamily="@font/inter"
-        app:layout_constraintBottom_toTopOf="@+id/opacityBar"
+        app:layout_constraintBottom_toTopOf="@+id/valueBar"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.498"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintVertical_bias="1.0" />
 
-    <com.larswerkman.holocolorpicker.OpacityBar
-        android:id="@+id/opacityBar"
+    <com.larswerkman.holocolorpicker.ValueBar
+        android:id="@+id/valueBar"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         app:layout_constraintBottom_toBottomOf="parent"

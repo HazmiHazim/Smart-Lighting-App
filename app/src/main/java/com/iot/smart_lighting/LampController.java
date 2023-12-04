@@ -199,7 +199,7 @@ public class LampController extends AppCompatActivity {
     private void updateLampState(int lampId, int newStatus) {
         // Use try-finally to ensure db is close no matter what happen
         try {
-            // Open The Database for Reading
+            // Open The Database for Writing
             sqlDB = myDB.getWritableDatabase();
             ContentValues cv = new ContentValues();
             cv.put("status", newStatus);

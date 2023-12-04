@@ -42,7 +42,6 @@ public class Timer extends AppCompatActivity {
 
     private String timeChoose;
 
-    // Variable to store the selected index. Initialize as "-1" means no selected index yet
     private int selectedIndex = 0;
 
     // Initialize Arraylist Globally
@@ -185,7 +184,7 @@ public class Timer extends AppCompatActivity {
         return timeDigit <= 9 ? "0" + timeDigit : String.valueOf(timeDigit);
     }
 
-    // Create a method to handle the navigation page
+    // Method to handle the navigation page
     private void selectNavigationLamp(int index) {
         if (index != selectedIndex) {
             selectorArr[selectedIndex].setVisibility(View.GONE); // Hide the current selector
