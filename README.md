@@ -32,7 +32,7 @@ implementation 'com.larswerkman:HoloColorPicker:1.5'
 implementation 'com.github.PhilJay:MPAndroidChart:v3.1.0'
 ```
 
-### `Supported Command`
+## `Supported Command`
 - Turning On/Off Lamp
 ```
 Turn on lamp <1|2|3>
