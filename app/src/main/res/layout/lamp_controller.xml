@@ -102,10 +102,10 @@
         android:visibility="gone"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.42"
+        app:layout_constraintHorizontal_bias="0.460"
         app:layout_constraintStart_toEndOf="@+id/lSwitch1"
         app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.17"
+        app:layout_constraintVertical_bias="0.18"
         app:srcCompat="@drawable/lamp_on" />
 
     <TextView
@@ -166,7 +166,7 @@
         app:layout_constraintHorizontal_bias="0.482"
         app:layout_constraintStart_toEndOf="@+id/lSwitch2"
         app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.528"
+        app:layout_constraintVertical_bias="0.525"
         app:srcCompat="@drawable/lamp_image_1" />
 
     <ImageView
@@ -176,10 +176,10 @@
         android:visibility="gone"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.44"
+        app:layout_constraintHorizontal_bias="0.460"
         app:layout_constraintStart_toEndOf="@+id/lSwitch2"
         app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.499"
+        app:layout_constraintVertical_bias="0.502"
         app:srcCompat="@drawable/lamp_on" />
 
     <TextView
@@ -240,7 +240,7 @@
         app:layout_constraintHorizontal_bias="0.482"
         app:layout_constraintStart_toEndOf="@+id/lSwitch3"
         app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.83"
+        app:layout_constraintVertical_bias="0.825"
         app:srcCompat="@drawable/lamp_image_1" />
 
     <ImageView
@@ -250,10 +250,10 @@
         android:visibility="gone"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.46"
+        app:layout_constraintHorizontal_bias="0.460"
         app:layout_constraintStart_toEndOf="@+id/lSwitch3"
         app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.827"
+        app:layout_constraintVertical_bias="0.824"
         app:srcCompat="@drawable/lamp_on" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>
