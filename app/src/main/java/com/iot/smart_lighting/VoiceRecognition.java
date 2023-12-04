@@ -270,6 +270,7 @@ public class VoiceRecognition implements RecognitionListener {
         }
     }
 
+    // Function to update colour in SQLite DB
     private void updateColour(int lampId, String colour) {
         // Use try-finally to ensure db is close no matter what happen
         try {

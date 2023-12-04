@@ -12,6 +12,7 @@ import android.widget.SeekBar;
 import android.widget.Switch;
 import android.widget.Toast;
 
+import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 
 import com.iot.smart_lighting.Model.SmartLampDB;
@@ -83,6 +84,23 @@ public class LampController extends AppCompatActivity {
         // Event when slide the seekbar 3
         eventSeekBar(intensity3, 3, "http://192.168.4.1/lamp3/on?value=");
 
+        // Info dialog box shown when click for user guide commands
+        info.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                AlertDialog.Builder infoBox = new AlertDialog.Builder(LampController.this);
+                infoBox.setIcon(R.drawable.phoenix);
+                infoBox.setTitle("ON/OFF Commands");
+                infoBox.setMessage("Supported Commands:" +
+                        "\nTurn On Lamp <1|2|3>" +
+                        "\nTurn On All Lamps" +
+                        "\nTurn Off Lamp <1|2|3>" +
+                        "\nTurn Off All Lamps");
+                AlertDialog alertDialog = infoBox.create();
+                alertDialog.show();
+            }
+        });
+
         // Event when click back icon button
         back.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -116,6 +134,7 @@ public class LampController extends AppCompatActivity {
         });
     }
 
+    // Function for slider to change intensity of the lamp
     private void eventSeekBar(SeekBar seekBar, int lampId, String url) {
         seekBar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
             @Override
@@ -130,8 +149,6 @@ public class LampController extends AppCompatActivity {
                 } finally {
                     sqlDB.close();
                 }
-                Log.d("Seek Bar Value: ", String.valueOf(seekBar.getProgress()));
-
                 String dynamicUrl = url + intensityValue;
                 esp32.applyLamp(dynamicUrl);
             }

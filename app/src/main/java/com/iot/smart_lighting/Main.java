@@ -8,7 +8,6 @@ import android.content.pm.PackageManager;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.Toast;
@@ -55,6 +54,7 @@ public class Main extends AppCompatActivity {
         // Ask for permission to access location and to access microphone
         requestPermissions(new String[]{Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.RECORD_AUDIO}, 200);
 
+        // Info dialog box shown when click for user guide commands
         info.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -64,12 +64,13 @@ public class Main extends AppCompatActivity {
                 infoBox.setTitle("Phoenix Intelligence Guide");
                 infoBox.setMessage("Step 1: Say 'HEY PHOENIX' to wake up Phoenix." +
                         "\nStep 2: Say 'COMMANDS' to let Phoenix know you want to issue a command." +
-                        "\nStep 3: Say a simple command, such as 'TURN ON LAMP 1'.");
+                        "\nStep 3: Say a simple command, such as 'TURN <ON|OFF> LAMP <1|2|3>'.");
                 AlertDialog alertDialog = infoBox.create();
                 alertDialog.show();
             }
         });
 
+        // Navigation event when click feature 1
         feature1.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -78,6 +79,7 @@ public class Main extends AppCompatActivity {
             }
         });
 
+        // Navigation event when click feature 2
         feature2.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -86,6 +88,7 @@ public class Main extends AppCompatActivity {
             }
         });
 
+        // Navigation event when click feature 3
         feature3.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -94,6 +97,7 @@ public class Main extends AppCompatActivity {
             }
         });
 
+        // Navigation event when click feature 4
         feature4.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -103,6 +107,7 @@ public class Main extends AppCompatActivity {
         });
     }
 
+    // Function to request permission for location and microphone
     @Override
     public void onRequestPermissionsResult(int requestCode, String[] permissions, int[] granResults) {
         super.onRequestPermissionsResult(requestCode, permissions, granResults);
@@ -119,6 +124,7 @@ public class Main extends AppCompatActivity {
         }
     }
 
+    // Function to create if the table is empty, otherwise retrieve the table data
     public void createOrRetrieve() {
         // Use try-finally to ensure db is close no matter what happen
         try {
@@ -131,8 +137,6 @@ public class Main extends AppCompatActivity {
                 cursor.close();
             } else {
                 String esp32Ssid = esp32.getESP32Ssid();
-                Log.d("SSID", "Retrieved SSID: " + esp32Ssid);
-                Log.d("SSID", "Comparison result: " + esp32Ssid.equalsIgnoreCase("\"ESP32-SMART-LAMP\""));
                 if (esp32Ssid.equalsIgnoreCase("\"ESP32-SMART-LAMP\"")) {
                     // Lamp 1
                     createData(1, esp32Ssid, 0, 1, 0);

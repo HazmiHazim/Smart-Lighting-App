@@ -12,6 +12,7 @@ import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 
+import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 
 import com.iot.smart_lighting.Model.SmartLampDB;
@@ -96,6 +97,22 @@ public class ColourEditor extends AppCompatActivity {
             });
         }
 
+        // Info dialog box shown when click for user guide commands
+        info.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                AlertDialog.Builder infoBox = new AlertDialog.Builder(ColourEditor.this);
+                infoBox.setIcon(R.drawable.phoenix);
+                infoBox.setTitle("Colour Commands");
+                infoBox.setMessage("WARNING: ENSURE THAT THE LAMP IS ON TO USE THIS FEATURE\n" +
+                        "\nSupported Commands:" +
+                        "\nSet <Red|Green|Blue|Yellow|Indigo|Lavender> Colour for Lamp <1|2|3>");
+                AlertDialog alertDialog = infoBox.create();
+                alertDialog.show();
+            }
+        });
+
+        // Event when click back icon button
         back.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -103,6 +120,7 @@ public class ColourEditor extends AppCompatActivity {
             }
         });
 
+        // Event for change colour
         colourWheel.setOnColorChangedListener(new ColorPicker.OnColorChangedListener() {
             @Override
             public void onColorChanged(int color) {
@@ -122,7 +140,7 @@ public class ColourEditor extends AppCompatActivity {
         });
     }
 
-    // Method to handle the navigation page
+    // Function to handle the navigation page
     private void selectNavigationLamp(int index) {
         if (index != selectedIndex) {
             selectorArr[selectedIndex].setVisibility(View.GONE); // Hide the current selector

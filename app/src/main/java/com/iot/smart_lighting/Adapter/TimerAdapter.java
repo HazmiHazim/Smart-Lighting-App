@@ -8,7 +8,6 @@ import android.graphics.Color;
 import android.os.CountDownTimer;
 import android.os.Handler;
 import android.os.Looper;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -149,6 +148,7 @@ public class TimerAdapter extends RecyclerView.Adapter<TimerAdapter.TimerHolder>
         }
     }
 
+    // Function to start countdown based on time set
     private void startCountdown(int lampId) {
         String timeSet = timeChoose;
         try {
@@ -187,7 +187,6 @@ public class TimerAdapter extends RecyclerView.Adapter<TimerAdapter.TimerHolder>
         if (lampId == 1) {
             esp32.applyLamp("http://192.168.4.1/lamp1?timer=" + timer);
             updateLampState(lampId, 1);
-            Log.d("Timer", "Timer Set: " + timer);
         } else if (lampId == 2) {
             esp32.applyLamp("http://192.168.4.1/lamp2?timer=" + timer);
             updateLampState(lampId, 1);

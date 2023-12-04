@@ -14,6 +14,7 @@ import android.widget.LinearLayout;
 import android.widget.TimePicker;
 import android.widget.Toast;
 
+import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.ItemTouchHelper;
 import androidx.recyclerview.widget.LinearLayoutManager;
@@ -90,6 +91,29 @@ public class Timer extends AppCompatActivity {
         // Set default navigation lamp page to lamp 1 when opening the page
         selectNavigationLamp(0);
 
+        // Info dialog box shown when click for user guide commands
+        info.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                AlertDialog.Builder infoBox = new AlertDialog.Builder(Timer.this);
+                infoBox.setIcon(R.drawable.phoenix);
+                infoBox.setTitle("Timer Commands");
+                infoBox.setMessage("WARNING: ENSURE THAT THE LAMP IS ON TO USE THIS FEATURE\n" +
+                        "\nSupported Commands:" +
+                        "\nSet Timer <1 to 60> <Seconds|Minutes|Hours> for Lamp <1|2|3>");
+                AlertDialog alertDialog = infoBox.create();
+                alertDialog.show();
+            }
+        });
+
+        // Event when click back icon button
+        back.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                finish();
+            }
+        });
+
         // Click event on which lamp is used
         for (int i = 0; i < timerLampArr.length; i++) {
             final int index = i;
@@ -124,14 +148,6 @@ public class Timer extends AppCompatActivity {
                 }
             }
         }).attachToRecyclerView(recyclerView);
-
-        // Event when click back icon button
-        back.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                finish();
-            }
-        });
 
         // Event when click floating action button
         addTimer.setOnClickListener(new View.OnClickListener() {
