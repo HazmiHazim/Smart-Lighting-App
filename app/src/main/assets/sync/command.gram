@@ -11,15 +11,12 @@ grammar commands;
 
 <unit> = <digit> seconds | <digit> minutes | <digit> hours;
 
-public <command> = turn on lamp one |
-                   turn on lamp two |
-                   turn on lamp three |
-                   turn off lamp one |
-                   turn off lamp two |
-                   turn off lamp three |
-                   turn on all lamp |
-                   turn off all lamp |
-                   set timer to <unit> for lamp one |
-                   set timer to <unit> for lamp two |
-                   set timer to <unit> for lamp three |
-                   stop timer;
+<colour> = red | yellow | blue | orange | green | violet | indigo | pink | lavender | cyan | crimson |
+           maroon | teal | turquoise;
+
+public <command> = turn on lamp one | turn on lamp two | turn on lamp three |
+                   turn off lamp one | turn off lamp two | turn off lamp three |
+                   turn on all lamps | turn off all lamps |
+                   set timer to <unit> for lamp one | set timer to <unit> for lamp two | set timer to <unit> for lamp three |
+                   stop timer |
+                   set <colour> colour for lamp one | set <colour> colour for lamp two | set <colour> colour for lamp three;

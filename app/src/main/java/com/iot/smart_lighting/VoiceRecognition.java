@@ -168,12 +168,13 @@ public class VoiceRecognition implements RecognitionListener {
 
     // Function for voice recognition to do what user command
     private void executeCommand(String textResult) {
-        Pattern pattern = Pattern.compile("set timer to (.+) for (lamp \\w+)");
-        Matcher matcher = pattern.matcher(textResult);
-
-        if (matcher.matches()) {
-            String durationString = matcher.group(1);
-            String lampString = matcher.group(2);
+        // Voice Command for Timer
+        // Use pattern and matcher to detect word spoken match for the timer
+        Pattern timerPattern = Pattern.compile("set timer to (.+) for (lamp \\w+)");
+        Matcher timerMatcher = timerPattern.matcher(textResult);
+        if (timerMatcher.matches()) {
+            String durationString = timerMatcher.group(1);
+            String lampString = timerMatcher.group(2);
             // Convert the text duration to an integer value
             int duration = convertDurationStringToEndpoint(durationString);
             lamp = convertLampStringToEndPoint(lampString);
@@ -181,6 +182,28 @@ public class VoiceRecognition implements RecognitionListener {
             esp32.applyLamp(endPoint);
             updateLamp(Integer.parseInt(lamp.replaceAll("[\\D]", "")), 0, 0);
         }
+
+        // Voice Command for Colour
+        // Use pattern and matcher to detect word spoken match for the timer
+        Pattern colourPattern = Pattern.compile("set (.+) colour for (lamp \\w+)");
+        Matcher colourMatcher = colourPattern.matcher(textResult);
+        if (colourMatcher.matches()) {
+            String colourString = colourMatcher.group(1);
+            String lampString = colourMatcher.group(2);
+            lamp = convertLampStringToEndPoint(lampString);
+            int[] rgb = convertColourToRGB(colourString);
+            if (rgb != null && rgb.length == 3) {
+                int red = rgb[0];
+                int green = rgb[1];
+                int blue = rgb[2];
+                // Convert RGB to hex color
+                String hexColour = String.format("#%02X%02X%02X", red, green, blue);
+                String endPoint = "http://192.168.4.1/" + lamp + "/colour?red=" + red + "&green=" + green + "&blue=" + blue;
+                esp32.applyLamp(endPoint);
+                updateColour(Integer.parseInt(lamp.replaceAll("[\\D]", "")), hexColour);
+            }
+        }
+
         switch (textResult) {
             case "turn on lamp one":
                 esp32.applyLamp("http://192.168.4.1/lamp1/on?value=255");
@@ -206,7 +229,7 @@ public class VoiceRecognition implements RecognitionListener {
                 esp32.applyLamp("http://192.168.4.1/lamp3/off");
                 updateLamp(3, 0, 0);
                 break;
-            case "turn on all lamp":
+            case "turn on all lamps":
                 esp32.applyLamp("http://192.168.4.1/lamp1/on?value=255");
                 esp32.applyLamp("http://192.168.4.1/lamp2/on?value=255");
                 esp32.applyLamp("http://192.168.4.1/lamp3/on?value=255");
@@ -214,7 +237,7 @@ public class VoiceRecognition implements RecognitionListener {
                 updateLamp(2, 1, 255);
                 updateLamp(3, 1, 255);
                 break;
-            case "turn off all lamp":
+            case "turn off all lamps":
                 esp32.applyLamp("http://192.168.4.1/lamp1/off");
                 esp32.applyLamp("http://192.168.4.1/lamp2/off");
                 esp32.applyLamp("http://192.168.4.1/lamp3/off");
@@ -236,12 +259,25 @@ public class VoiceRecognition implements RecognitionListener {
     private void updateLamp(int lampId, int newStatus, int intensity) {
         // Use try-finally to ensure db is close no matter what happen
         try {
-            // Open The Database for Reading
+            // Open The Database for Write
             sqlDB = myDB.getWritableDatabase();
             ContentValues cv = new ContentValues();
             cv.put("status", newStatus);
             cv.put("intensity", intensity);
             sqlDB.update("lamp", cv, "id = ?", new String[]{String.valueOf(lampId)});
+        } finally {
+            sqlDB.close();
+        }
+    }
+
+    private void updateColour(int lampId, String colour) {
+        // Use try-finally to ensure db is close no matter what happen
+        try {
+            // Open The Database for Write
+            sqlDB = myDB.getWritableDatabase();
+            ContentValues cv = new ContentValues();
+            cv.put("colour", colour);
+            sqlDB.update("lampColour", cv, "id = ?", new String[] {String.valueOf(lampId)});
         } finally {
             sqlDB.close();
         }
@@ -276,6 +312,58 @@ public class VoiceRecognition implements RecognitionListener {
             default:
                 break;
         }
+    }
+
+    // Function to convert colour detect to RGB value
+    private int[] convertColourToRGB(String colourDetect) {
+        int[] rgb;
+        switch (colourDetect) {
+            case "red":
+                rgb = new int[] {255, 0, 0};
+                break;
+            case "yellow":
+                rgb = new int[] {255, 255, 153};
+                break;
+            case "blue":
+                rgb = new int[] {0, 0, 255};
+                break;
+            case "orange":
+                rgb = new int[] {255, 165, 0};
+                break;
+            case "green":
+                rgb = new int[] {0, 255, 0};
+                break;
+            case "violet":
+                rgb = new int[] {138, 43, 226};
+                break;
+            case "indigo":
+                rgb = new int[] {75, 0, 130};
+                break;
+            case "pink":
+                rgb = new int[] {255, 192, 203};
+                break;
+            case "lavender":
+                rgb = new int[] {230, 230, 250};
+                break;
+            case "cyan":
+                rgb = new int[] {0, 255, 255};
+                break;
+            case "crimson":
+                rgb = new int[] {220, 20, 60};
+                break;
+            case "maroon":
+                rgb = new int[] {128, 0, 0};
+                break;
+            case "teal":
+                rgb = new int[] {0, 128, 128};
+                break;
+            case "turquoise":
+                rgb = new int[] {48, 213, 200};
+                break;
+            default:
+                rgb = new int[] {255, 255, 255};
+        }
+        return rgb;
     }
 
     // Function to convert voice text to integer value for endpoint to send the request to ESP32
