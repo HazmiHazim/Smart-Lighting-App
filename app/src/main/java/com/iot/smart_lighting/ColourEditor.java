@@ -116,9 +116,8 @@ public class ColourEditor extends AppCompatActivity {
                 int green = Color.green(color);
                 int blue = Color.blue(color);
 
-                esp32.applyLamp("http://192.168.4.1/lamp" + selectedIndex + 1 +
-                "/colour?red=" + red + "&green=" + green + "&blue=" + blue);
-                updateColour(lamp, hexColour);
+                esp32.applyLamp("http://192.168.4.1/lamp" + lamp + "/colour?red=" + red + "&green=" + green + "&blue=" + blue);
+                updateColour(lamp, hexColour, 1);
             }
         });
     }
@@ -160,7 +159,7 @@ public class ColourEditor extends AppCompatActivity {
                 createData(3);
             }
         } finally {
-            //sqlDB.close();
+            sqlDB.close();
         }
         return "#FFFFFF";
     }
@@ -175,12 +174,12 @@ public class ColourEditor extends AppCompatActivity {
             cv.put("lamp_id", lampId);
             sqlDB.insert("lampColour", null, cv);
         } finally {
-            //sqlDB.close();
+            sqlDB.close();
         }
     }
 
     // Update colour based on lamp_id selected
-    private void updateColour(int lampId, String colour) {
+    private void updateColour(int lampId, String colour, int status) {
         // Use try-finally to ensure db is close no matter what happen
         try {
             // Open The Database for Writing
@@ -188,8 +187,13 @@ public class ColourEditor extends AppCompatActivity {
             ContentValues cv = new ContentValues();
             cv.put("colour", colour);
             sqlDB.update("lampColour", cv, "id = ?", new String[] {String.valueOf(lampId)});
+
+            // Update status in lamp table
+            ContentValues cvStatus = new ContentValues();
+            cvStatus.put("status", status);
+            sqlDB.update("lamp", cvStatus, "id = ?", new String[] {String.valueOf(lampId)});
         } finally {
-            //sqlDB.close();
+            sqlDB.close();
         }
     }
 }
