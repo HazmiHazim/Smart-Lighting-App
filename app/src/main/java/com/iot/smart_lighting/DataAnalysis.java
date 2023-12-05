@@ -58,24 +58,25 @@ public class DataAnalysis extends AppCompatActivity {
             }
         });
 
-        // Disable Description of Line Chart
+        // Styling Line Chart
         lineChart.getDescription().setEnabled(false);
+        lineChart.setAutoScaleMinMaxEnabled(true);
+        lineChart.setBackgroundColor(Color.parseColor("#000000"));
 
         // Disable X Axis
         XAxis x = lineChart.getXAxis();
         x.setEnabled(false);
+        x.setGranularityEnabled(true);
+        x.setDrawAxisLine(true);
+        x.setTextColor(Color.parseColor("#F5F5F5"));
 
         // Y Axis on the Left Side
         YAxis yLeft = lineChart.getAxisLeft();
         yLeft.setEnabled(true);
-        yLeft.setDrawAxisLine(false);
-        yLeft.setDrawLabels(true);
+        yLeft.setDrawAxisLine(true);
         yLeft.setDrawLabels(true);
         yLeft.setGranularityEnabled(true);
-        yLeft.setAxisMinimum(0f);
-        yLeft.setAxisMaximum(100f);
-        yLeft.setLabelCount(10);
-        yLeft.setTextColor(Color.parseColor("#6A0DAD"));
+        yLeft.setTextColor(Color.parseColor("#F5F5F5"));
 
         // Y Axis on the Right Side
         YAxis yRight = lineChart.getAxisRight();
@@ -84,15 +85,15 @@ public class DataAnalysis extends AppCompatActivity {
         // Dummy data for Entry 1
         List<Entry> entries = new ArrayList<>();
         entries.add(new Entry(0, 0f));
-        entries.add(new Entry(1, 4f));
-        entries.add(new Entry(2, 7f));
-        entries.add(new Entry(3, 15f));
-        entries.add(new Entry(4, 40f));
-        entries.add(new Entry(5, 60f));
-        entries.add(new Entry(6, 40f));
-        entries.add(new Entry(7, 15f));
-        entries.add(new Entry(8, 7f));
-        entries.add(new Entry(9, 4f));
+        entries.add(new Entry(1, 21f));
+        entries.add(new Entry(2, 23));
+        entries.add(new Entry(3, 25f));
+        entries.add(new Entry(4, 27f));
+        entries.add(new Entry(5, 15f));
+        entries.add(new Entry(6, 18f));
+        entries.add(new Entry(7, 27f));
+        entries.add(new Entry(8, 23f));
+        entries.add(new Entry(9, 25f));
         entries.add(new Entry(10, 0f));
 
 
@@ -101,7 +102,7 @@ public class DataAnalysis extends AppCompatActivity {
         dataSet.setCubicIntensity(0.2f);
         dataSet.setDrawFilled(true);
         dataSet.setFillColor(Color.parseColor("#87CEEB"));
-        dataSet.setFillAlpha(100);
+        dataSet.setFillAlpha(1000);
         dataSet.setLineWidth(2);
 
         LineData lineData = new LineData(dataSet);
@@ -110,6 +111,7 @@ public class DataAnalysis extends AppCompatActivity {
 
         Legend legend = lineChart.getLegend();
         legend.setHorizontalAlignment(Legend.LegendHorizontalAlignment.CENTER);
-        legend.setTextColor(Color.parseColor("#6A0DAD"));
+        legend.setTextColor(Color.parseColor("#F5F5F5"));
+        legend.setForm(Legend.LegendForm.CIRCLE);
     }
 }
