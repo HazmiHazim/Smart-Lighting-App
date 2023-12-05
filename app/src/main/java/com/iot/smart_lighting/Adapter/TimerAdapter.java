@@ -151,6 +151,7 @@ public class TimerAdapter extends RecyclerView.Adapter<TimerAdapter.TimerHolder>
     // Function to start countdown based on time set
     private void startCountdown(int lampId) {
         String timeSet = timeChoose;
+        long timeTobeCountdown = 0;
         try {
             if (timeChoose != null) {
                 // Remove spaces from the timeChoose string
@@ -159,8 +160,21 @@ public class TimerAdapter extends RecyclerView.Adapter<TimerAdapter.TimerHolder>
                 LocalTime getTimeChoose = LocalTime.parse(timeChoose);
                 // Get current time
                 LocalTime currentTime = LocalTime.now();
-                // Calculate the time difference
-                long timeTobeCountdown = Duration.between(currentTime, getTimeChoose).toMillis();
+
+                // Check if chosen time is earlier than current time
+                if (getTimeChoose.isBefore(currentTime)) {
+                    // Calculate the time difference
+                    timeTobeCountdown = Duration.between(getTimeChoose, currentTime).toMillis();
+                    // Add 1 day in milliseconds
+                    timeTobeCountdown = timeTobeCountdown + 86400000;
+                    System.out.println("Time Count When Less: " + timeTobeCountdown);
+                }
+                else {
+                    // Calculate the time difference
+                    timeTobeCountdown = Duration.between(currentTime, getTimeChoose).toMillis();
+                    System.out.println("Time Count When More: " + timeTobeCountdown);
+                }
+
                 countDownTimer = new CountDownTimer(timeTobeCountdown, 1000) {
                     @Override
                     public void onTick(long millisUntilFinished) {
