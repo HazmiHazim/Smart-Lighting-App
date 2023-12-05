@@ -6,10 +6,12 @@ import android.os.Bundle;
 import android.view.View;
 import android.widget.ImageView;
 
+import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 
 import com.github.mikephil.charting.charts.LineChart;
 import com.github.mikephil.charting.components.Description;
+import com.github.mikephil.charting.components.Legend;
 import com.github.mikephil.charting.components.XAxis;
 import com.github.mikephil.charting.components.YAxis;
 import com.github.mikephil.charting.data.Entry;
@@ -25,7 +27,6 @@ public class DataAnalysis extends AppCompatActivity {
 
     ImageView back, info;
     LineChart lineChart;
-    List<String> xValues;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -36,6 +37,20 @@ public class DataAnalysis extends AppCompatActivity {
         info = findViewById(R.id.info_btn5);
         lineChart = findViewById(R.id.line_chart);
 
+        info.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                AlertDialog.Builder infoBox = new AlertDialog.Builder(DataAnalysis.this);
+                infoBox.setIcon(R.drawable.phoenix);
+                infoBox.setTitle("Data Analysis Commands");
+                infoBox.setMessage("Supported Commands:" +
+                        "\nOpen Data Analysis" +
+                        "\nShow Data Analysis");
+                AlertDialog alertDialog = infoBox.create();
+                alertDialog.show();
+            }
+        });
+
         back.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -43,58 +58,58 @@ public class DataAnalysis extends AppCompatActivity {
             }
         });
 
-        Description description = new Description();
-        description.setText("Voltage (V)");
-        description.setPosition(150f, 15f);
-        lineChart.setDescription(description);
-        lineChart.getAxisRight().setDrawLabels(false);
+        // Disable Description of Line Chart
+        lineChart.getDescription().setEnabled(false);
 
-        xValues = Arrays.asList("LampModel 1", "LampModel 2", "LampModel 3");
-
+        // Disable X Axis
         XAxis x = lineChart.getXAxis();
-        x.setPosition(XAxis.XAxisPosition.BOTTOM);
-        x.setValueFormatter(new IndexAxisValueFormatter(xValues));
-        x.setLabelCount(4);
-        x.setGranularity(1f);
+        x.setEnabled(false);
 
-        YAxis y = lineChart.getAxisLeft();
-        y.setAxisMinimum(0f);
-        y.setAxisMaximum(100f);
-        y.setAxisLineWidth(2f);
-        y.setLabelCount(10);
+        // Y Axis on the Left Side
+        YAxis yLeft = lineChart.getAxisLeft();
+        yLeft.setEnabled(true);
+        yLeft.setDrawAxisLine(false);
+        yLeft.setDrawLabels(true);
+        yLeft.setDrawLabels(true);
+        yLeft.setGranularityEnabled(true);
+        yLeft.setAxisMinimum(0f);
+        yLeft.setAxisMaximum(100f);
+        yLeft.setLabelCount(10);
+        yLeft.setTextColor(Color.parseColor("#6A0DAD"));
 
-        // Dummy data for lamp 1
-        List<Entry> entries1 = new ArrayList<>();
-        entries1.add(new Entry(0, 10f));
-        entries1.add(new Entry(1, 10f));
-        entries1.add(new Entry(2, 15f));
-        entries1.add(new Entry(3, 45f));
+        // Y Axis on the Right Side
+        YAxis yRight = lineChart.getAxisRight();
+        yRight.setEnabled(false);
 
-        // Dummy data for lamp 2
-        List<Entry> entries2 = new ArrayList<>();
-        entries2.add(new Entry(0, 80f));
-        entries2.add(new Entry(1, 60f));
-        entries2.add(new Entry(2, 50f));
-        entries2.add(new Entry(3, 30f));
+        // Dummy data for Entry 1
+        List<Entry> entries = new ArrayList<>();
+        entries.add(new Entry(0, 0f));
+        entries.add(new Entry(1, 4f));
+        entries.add(new Entry(2, 7f));
+        entries.add(new Entry(3, 15f));
+        entries.add(new Entry(4, 40f));
+        entries.add(new Entry(5, 60f));
+        entries.add(new Entry(6, 40f));
+        entries.add(new Entry(7, 15f));
+        entries.add(new Entry(8, 7f));
+        entries.add(new Entry(9, 4f));
+        entries.add(new Entry(10, 0f));
 
-        // Dummy data for lamp 3
-        List<Entry> entries3 = new ArrayList<>();
-        entries3.add(new Entry(0, 35));
-        entries3.add(new Entry(1, 70f));
-        entries3.add(new Entry(2, 40f));
-        entries3.add(new Entry(3, 25f));
 
-        LineDataSet dataSet1 = new LineDataSet(entries1, "LampModel 1");
-        dataSet1.setColor(Color.GREEN);
+        LineDataSet dataSet = new LineDataSet(entries, "Current Flow (Ampere)");
+        dataSet.setMode(LineDataSet.Mode.CUBIC_BEZIER);
+        dataSet.setCubicIntensity(0.2f);
+        dataSet.setDrawFilled(true);
+        dataSet.setFillColor(Color.parseColor("#87CEEB"));
+        dataSet.setFillAlpha(100);
+        dataSet.setLineWidth(2);
 
-        LineDataSet dataSet2 = new LineDataSet(entries2, "LampModel 2");
-        dataSet2.setColor(Color.BLUE);
-
-        LineDataSet dataSet3 = new LineDataSet(entries3, "LampModel 3");
-        dataSet3.setColor(Color.RED);
-
-        LineData lineData = new LineData(dataSet1, dataSet2, dataSet3);
+        LineData lineData = new LineData(dataSet);
         lineChart.setData(lineData);
         lineChart.invalidate();
+
+        Legend legend = lineChart.getLegend();
+        legend.setHorizontalAlignment(Legend.LegendHorizontalAlignment.CENTER);
+        legend.setTextColor(Color.parseColor("#6A0DAD"));
     }
 }
