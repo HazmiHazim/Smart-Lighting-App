@@ -138,9 +138,11 @@ public class VoiceRecognition implements RecognitionListener {
     @Override
     public void onResult(Hypothesis hypothesis) {
         if (hypothesis != null) {
-            Toast.makeText(context, "I'm Listening...", Toast.LENGTH_SHORT).show();
             String text = hypothesis.getHypstr();
             Log.d("Voice Result", "Result: " + text);
+            if (text.equals("hey phoenix") || text.equals("commands")) {
+                Toast.makeText(context, "I'm Listening...", Toast.LENGTH_SHORT).show();
+            }
             executeCommand(text);
         }
     }
@@ -181,6 +183,7 @@ public class VoiceRecognition implements RecognitionListener {
             String endPoint = "http://192.168.4.1/" + lamp + "?timer=" + duration;
             esp32.applyLamp(endPoint);
             updateLamp(Integer.parseInt(lamp.replaceAll("[\\D]", "")), 0, 0);
+            Toast.makeText(context, "Okay!", Toast.LENGTH_SHORT).show();
         }
 
         // Voice Command for Colour
@@ -201,57 +204,59 @@ public class VoiceRecognition implements RecognitionListener {
                 String endPoint = "http://192.168.4.1/" + lamp + "/colour?red=" + red + "&green=" + green + "&blue=" + blue;
                 esp32.applyLamp(endPoint);
                 updateColour(Integer.parseInt(lamp.replaceAll("[\\D]", "")), hexColour);
+                Toast.makeText(context, "Okay!", Toast.LENGTH_SHORT).show();
             }
         }
 
-        switch (textResult) {
-            case "turn on lamp one":
-                esp32.applyLamp("http://192.168.4.1/lamp1/on?value=255");
-                updateLamp(1, 1, 255);
-                break;
-            case "turn off lamp one":
-                esp32.applyLamp("http://192.168.4.1/lamp1/off");
-                updateLamp(1, 0, 0);
-                break;
-            case "turn on lamp two":
-                esp32.applyLamp("http://192.168.4.1/lamp2/on?value=255");
-                updateLamp(2, 1, 255);
-                break;
-            case "turn off lamp two":
-                esp32.applyLamp("http://192.168.4.1/lamp2/off");
-                updateLamp(2, 0, 0);
-                break;
-            case "turn on lamp three":
-                esp32.applyLamp("http://192.168.4.1/lamp3/on?value=255");
-                updateLamp(3, 1, 255);
-                break;
-            case "turn off lamp three":
-                esp32.applyLamp("http://192.168.4.1/lamp3/off");
-                updateLamp(3, 0, 0);
-                break;
-            case "turn on all lamps":
-                esp32.applyLamp("http://192.168.4.1/lamp1/on?value=255");
-                esp32.applyLamp("http://192.168.4.1/lamp2/on?value=255");
-                esp32.applyLamp("http://192.168.4.1/lamp3/on?value=255");
-                updateLamp(1, 1, 255);
-                updateLamp(2, 1, 255);
-                updateLamp(3, 1, 255);
-                break;
-            case "turn off all lamps":
-                esp32.applyLamp("http://192.168.4.1/lamp1/off");
-                esp32.applyLamp("http://192.168.4.1/lamp2/off");
-                esp32.applyLamp("http://192.168.4.1/lamp3/off");
-                updateLamp(1, 0, 0);
-                updateLamp(2, 0, 0);
-                updateLamp(3, 0, 0);
-                break;
-            case "stop timer":
-                esp32.applyLamp("http://192.168.4.1/timer?stop");
+        if (textResult.equals("turn on lamp one")) {
+            esp32.applyLamp("http://192.168.4.1/lamp1/on?value=255");
+            updateLamp(1, 1, 255);
+            Toast.makeText(context, "Okay!", Toast.LENGTH_SHORT).show();
+        } else if (textResult.equals("turn off lamp one")) {
+            esp32.applyLamp("http://192.168.4.1/lamp1/off");
+            updateLamp(1, 0, 0);
+            Toast.makeText(context, "Okay!", Toast.LENGTH_SHORT).show();
+        } else if (textResult.equals("turn on lamp two")) {
+            esp32.applyLamp("http://192.168.4.1/lamp2/on?value=255");
+            updateLamp(2, 1, 255);
+            Toast.makeText(context, "Okay!", Toast.LENGTH_SHORT).show();
+        } else if (textResult.equals("turn off lamp two")) {
+            esp32.applyLamp("http://192.168.4.1/lamp2/off");
+            updateLamp(2, 0, 0);
+            Toast.makeText(context, "Okay!", Toast.LENGTH_SHORT).show();
+        } else if (textResult.equals("turn on lamp three")) {
+            esp32.applyLamp("http://192.168.4.1/lamp3/on?value=255");
+            updateLamp(3, 1, 255);
+            Toast.makeText(context, "Okay!", Toast.LENGTH_SHORT).show();
+        } else if (textResult.equals("turn off lamp three")) {
+            esp32.applyLamp("http://192.168.4.1/lamp3/off");
+            updateLamp(3, 0, 0);
+            Toast.makeText(context, "Okay!", Toast.LENGTH_SHORT).show();
+        } else if (textResult.equals("turn on all lamps")) {
+            esp32.applyLamp("http://192.168.4.1/lamp1/on?value=255");
+            esp32.applyLamp("http://192.168.4.1/lamp2/on?value=255");
+            esp32.applyLamp("http://192.168.4.1/lamp3/on?value=255");
+            updateLamp(1, 1, 255);
+            updateLamp(2, 1, 255);
+            updateLamp(3, 1, 255);
+            Toast.makeText(context, "Okay!", Toast.LENGTH_SHORT).show();
+        } else if (textResult.equals("turn off all lamps")) {
+            esp32.applyLamp("http://192.168.4.1/lamp1/off");
+            esp32.applyLamp("http://192.168.4.1/lamp2/off");
+            esp32.applyLamp("http://192.168.4.1/lamp3/off");
+            updateLamp(1, 0, 0);
+            updateLamp(2, 0, 0);
+            updateLamp(3, 0, 0);
+            Toast.makeText(context, "Okay!", Toast.LENGTH_SHORT).show();
+        } else if (textResult.equals("stop timer")) {
+            esp32.applyLamp("http://192.168.4.1/timer?stop");
+            if (lamp != null) {
                 revertLampState();
-                break;
-            default:
-                //Toast.makeText(context, "Sorry! Unrecognized command.", Toast.LENGTH_SHORT).show();
-                break;
+            }
+            Toast.makeText(context, "Okay!", Toast.LENGTH_SHORT).show();
+        } else if (!textResult.equals("hey phoenix") && !textResult.equals("commands") &&
+                !timerMatcher.matches() && !colourMatcher.matches()) {
+            Toast.makeText(context, "Sorry! I didn't get that.", Toast.LENGTH_SHORT).show();
         }
     }
 
