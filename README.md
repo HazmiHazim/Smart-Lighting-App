@@ -19,7 +19,7 @@ wake word detection, similar to Siri and Alexa.
 - PocketSphinx Android
 
 ```
-implementation files('libs\\pocketsphinx-android-5prealpha-release.aar')
+implementation files('libs/pocketsphinx-android-5prealpha-release.aar')
 ```
 
 - Volley
