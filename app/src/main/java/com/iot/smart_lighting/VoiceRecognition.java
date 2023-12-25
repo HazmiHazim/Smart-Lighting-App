@@ -41,7 +41,7 @@ public class VoiceRecognition implements RecognitionListener {
     SmartLampDB myDB;
     SQLiteDatabase sqlDB;
 
-    // Global Variable to store the lamp use for stop timer
+    // Global Variable to store the lamp use for stop timer and colour
     private String lamp;
 
     public VoiceRecognition(Context context) {
