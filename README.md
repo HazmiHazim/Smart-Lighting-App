@@ -8,6 +8,11 @@ available for commands including on/off, set timer and set colour for the lamps.
 application is integrated with manual control for the lamp, enabling users to operate it from a
 distance using their hands.
 
+**For more details of the project:**
+```
+https://github.com/HazmiHazim/Smart-Lamp-Project
+```
+
 ## `Available Features`
 
 - Voice Recognition
