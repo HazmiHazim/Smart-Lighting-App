@@ -3,7 +3,6 @@ package com.iot.smart_lighting;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.os.Handler;
-import android.util.Log;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.Toast;
@@ -89,8 +88,7 @@ public class DataAnalysis extends AppCompatActivity {
 
                     @Override
                     public void onError(String error) {
-                        Log.d("Response: ", error);
-                        Toast.makeText(DataAnalysis.this, "Response: " + error, Toast.LENGTH_SHORT).show();
+                        Toast.makeText(DataAnalysis.this, "Failed to retrieve data", Toast.LENGTH_SHORT).show();
                     }
                 });
                 handler.postDelayed(this, 5000); // Refresh every 5 seconds (5000 milliseconds)
