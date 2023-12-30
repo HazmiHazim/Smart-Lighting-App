@@ -2,6 +2,7 @@ package com.iot.smart_lighting;
 
 import android.content.ContentValues;
 import android.content.Context;
+import android.content.Intent;
 import android.database.sqlite.SQLiteDatabase;
 import android.util.Log;
 import android.widget.Toast;
@@ -253,6 +254,10 @@ public class VoiceRecognition implements RecognitionListener {
             if (lamp != null) {
                 revertLampState();
             }
+            Toast.makeText(context, "Okay!", Toast.LENGTH_SHORT).show();
+        } else if (textResult.equals("open data analysis")) {
+            Intent intent = new Intent(context, DataAnalysis.class);
+            context.startActivity(intent);
             Toast.makeText(context, "Okay!", Toast.LENGTH_SHORT).show();
         } else if (!textResult.equals("hey phoenix") && !textResult.equals("commands") &&
                 !timerMatcher.matches() && !colourMatcher.matches()) {

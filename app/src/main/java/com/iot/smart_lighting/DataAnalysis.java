@@ -1,32 +1,41 @@
 package com.iot.smart_lighting;
 
-import android.content.Intent;
 import android.graphics.Color;
 import android.os.Bundle;
+import android.os.Handler;
+import android.util.Log;
 import android.view.View;
 import android.widget.ImageView;
+import android.widget.Toast;
 
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 
 import com.github.mikephil.charting.charts.LineChart;
-import com.github.mikephil.charting.components.Description;
 import com.github.mikephil.charting.components.Legend;
 import com.github.mikephil.charting.components.XAxis;
 import com.github.mikephil.charting.components.YAxis;
 import com.github.mikephil.charting.data.Entry;
 import com.github.mikephil.charting.data.LineData;
 import com.github.mikephil.charting.data.LineDataSet;
-import com.github.mikephil.charting.formatter.IndexAxisValueFormatter;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 
 public class DataAnalysis extends AppCompatActivity {
 
     ImageView back, info;
     LineChart lineChart;
+
+    // Declare ESP32 Class
+    Esp32 esp32;
+
+    // Declare Handler and Runnable for running a background thread for auto refresh
+    Handler handler;
+    Runnable refresh;
+
+    // Create ArrayList to store current data received
+    private List<Entry> entries = new ArrayList<>();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -36,6 +45,12 @@ public class DataAnalysis extends AppCompatActivity {
         back = findViewById(R.id.back_btn4);
         info = findViewById(R.id.info_btn5);
         lineChart = findViewById(R.id.line_chart);
+
+        // Instantiate ESP32 Class
+        esp32 = new Esp32(DataAnalysis.this);
+
+        // For auto refresh
+        handler = new Handler();
 
         info.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -58,6 +73,41 @@ public class DataAnalysis extends AppCompatActivity {
             }
         });
 
+        // Call function to styling the chart
+        styleChart();
+
+        // Auto refresh every 5 seconds
+        refresh = new Runnable() {
+            @Override
+            public void run() {
+                esp32.getDataAnalysis("http://192.168.4.1/analysis?current", new Esp32.DataAnalysisCallBack() {
+                    @Override
+                    public void onSuccess(String response) {
+                        double current = Double.parseDouble(response);
+                        updateChartUI(current);
+                    }
+
+                    @Override
+                    public void onError(String error) {
+                        Log.d("Response: ", error);
+                        Toast.makeText(DataAnalysis.this, "Response: " + error, Toast.LENGTH_SHORT).show();
+                    }
+                });
+                handler.postDelayed(this, 5000); // Refresh every 5 seconds (5000 milliseconds)
+            }
+        };
+        handler.post(refresh);
+    }
+
+    // Stop auto refresh if leave the page
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        handler.removeCallbacks(refresh);
+    }
+
+    // Function to styling the chart based on preferences
+    private void styleChart() {
         // Styling Line Chart
         lineChart.getDescription().setEnabled(false);
         lineChart.setAutoScaleMinMaxEnabled(true);
@@ -82,36 +132,33 @@ public class DataAnalysis extends AppCompatActivity {
         YAxis yRight = lineChart.getAxisRight();
         yRight.setEnabled(false);
 
-        // Dummy data for Entry 1
-        List<Entry> entries = new ArrayList<>();
-        entries.add(new Entry(0, 0f));
-        entries.add(new Entry(1, 21f));
-        entries.add(new Entry(2, 23));
-        entries.add(new Entry(3, 25f));
-        entries.add(new Entry(4, 27f));
-        entries.add(new Entry(5, 15f));
-        entries.add(new Entry(6, 18f));
-        entries.add(new Entry(7, 27f));
-        entries.add(new Entry(8, 23f));
-        entries.add(new Entry(9, 25f));
-        entries.add(new Entry(10, 0f));
-
-
-        LineDataSet dataSet = new LineDataSet(entries, "Current Flow (Ampere)");
-        dataSet.setMode(LineDataSet.Mode.CUBIC_BEZIER);
-        dataSet.setCubicIntensity(0.2f);
-        dataSet.setDrawFilled(true);
-        dataSet.setFillColor(Color.parseColor("#87CEEB"));
-        dataSet.setFillAlpha(1000);
-        dataSet.setLineWidth(2);
-
-        LineData lineData = new LineData(dataSet);
-        lineChart.setData(lineData);
-        lineChart.invalidate();
-
         Legend legend = lineChart.getLegend();
         legend.setHorizontalAlignment(Legend.LegendHorizontalAlignment.CENTER);
         legend.setTextColor(Color.parseColor("#F5F5F5"));
         legend.setForm(Legend.LegendForm.CIRCLE);
+    }
+
+    // Function to update LineChart with the given data from ESP32
+    private void updateChartUI(double current) {
+        // Add data received to the graph
+        entries.add(new Entry(entries.size(), (float) current));
+
+        // Run UI update on the main thread
+        runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                LineDataSet dataSet = new LineDataSet(entries, "Current Flow (Ampere)");
+                dataSet.setMode(LineDataSet.Mode.CUBIC_BEZIER);
+                dataSet.setCubicIntensity(0.2f);
+                dataSet.setDrawFilled(true);
+                dataSet.setFillColor(Color.parseColor("#87CEEB"));
+                dataSet.setFillAlpha(1000);
+                dataSet.setLineWidth(2);
+
+                LineData lineData = new LineData(dataSet);
+                lineChart.setData(lineData);
+                lineChart.invalidate();
+            }
+        });
     }
 }

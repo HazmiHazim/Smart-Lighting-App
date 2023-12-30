@@ -7,7 +7,6 @@ import android.net.wifi.WifiManager;
 import android.util.Log;
 import android.widget.Toast;
 
-import com.android.volley.NoConnectionError;
 import com.android.volley.Request;
 import com.android.volley.RequestQueue;
 import com.android.volley.Response;
@@ -25,6 +24,12 @@ public class Esp32 {
         this.queue = Volley.newRequestQueue(context);  // Instantiate the RequestQueue
     }
 
+    // Define callback to be used in Data Analysis Class
+    public interface DataAnalysisCallBack {
+        void onSuccess(String response);
+        void onError(String error);
+    }
+
     // Function to Get Network SSID
     public String getESP32Ssid() {
         WifiManager wifiManager = (WifiManager) context.getSystemService(Context.WIFI_SERVICE);
@@ -37,6 +42,7 @@ public class Esp32 {
         return "";
     }
 
+    // Function to send HTTP request using volley RequestQueue
     private void sendRequest(String url, int method, Response.Listener<String> success, Response.ErrorListener error) {
         StringRequest stringRequest = new StringRequest(method, url, success, error);
         queue.add(stringRequest);
@@ -89,5 +95,27 @@ public class Esp32 {
 
         // Add the request to the RequestQueue
         sendRequest(url, Request.Method.POST, success, error);
+    }
+
+    // Function to get current analysis from ESP32
+    public void getDataAnalysis(String url, DataAnalysisCallBack callBack) {
+        // Request a string response from the URL
+        // Use GET method to receive the data from the ESP32
+        Response.Listener<String> success = new Response.Listener<String>() {
+            @Override
+            public void onResponse(String response) {
+                callBack.onSuccess(response);
+            }
+        };
+
+        Response.ErrorListener error = new Response.ErrorListener() {
+            @Override
+            public void onErrorResponse(VolleyError error) {
+                callBack.onError(error.getMessage());
+            }
+        };
+
+        // Add the request to the RequestQueue
+        sendRequest(url, Request.Method.GET, success, error);
     }
 }
