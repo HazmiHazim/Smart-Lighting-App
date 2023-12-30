@@ -2,9 +2,11 @@
 
 This application is designed for Android devices running Android version 11 or higher. The
 application is equipped with voice recognition, allowing users to issue voice commands to turn the
-lamp on or off. Additionally, the application is integrated with manual control for the lamp,
-enabling users to operate it from a distance using their hands. This application also implements
-wake word detection, similar to Siri and Alexa.
+lamp on or off. Additionally, this application also implements wake word detection, where you need
+to speak out the key phrase to activate it, similar to Siri and Alexa. There are 3 basic features
+available for commands including on/off, set timer and set colour for the lamps. Moreover, the
+application is integrated with manual control for the lamp, enabling users to operate it from a
+distance using their hands.
 
 ## `Available Features`
 
@@ -85,4 +87,10 @@ Set timer to <1 to 60> <seconds|minutes|hours> for lamp <1|2|3>
 
 ```
 Set <red|yellow|green|blue|crimson|lavender|pink|indigo> colour for lamp <1|2|3>
+```
+
+- Open Data Analysis
+
+```
+Open data analysis
 ```
